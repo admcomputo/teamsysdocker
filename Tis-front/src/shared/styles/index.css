@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-azul-oscuro: #050B1C;
+  --color-brand-azul-profundo: #0A1A35;
+  --color-brand-azul-medio: #10264A;
+  --color-brand-azul-brillante: #2F80ED;
+  --color-brand-azul-electrico: #3FA9F5;
+  --color-brand-celeste-suave: #6EC1FF;
+  --color-brand-azul-neon: #4DA3FF;
+  --color-brand-accent-neon: #61FFD1;
+
+  --color-bg-dark: #050B1C;
+  --color-bg-secondary: #0A1A35;
+  
+  --color-card-bg: #0A1A35;
+  --color-card-border: #1B355E;
+  --color-icon-blue: #5DAEFF;
+
+  --color-text-primary: #FFFFFF;
+  --color-text-high-fidelity: #E2F0FF;
+  --color-text-secondary: #B8C7E0;
+  --color-text-muted: #8FA3BF;
+  
+  --color-button-primary: #2F80ED;
+  --color-button-hover: #1C6ED5;
+  
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@layer base {
+  body {
+    @apply bg-bg-dark text-text-primary font-sans antialiased m-0 p-0 overflow-x-hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-dark;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-azul-medio rounded-full hover:bg-brand-azul-brillante transition-colors;
+  }
+}
