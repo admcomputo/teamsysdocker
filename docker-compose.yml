@@ -37,7 +37,7 @@ services:
     build:
       context: ./Tis-front
       args:
-        VITE_API_URL: http://localhost:8081/api
+        VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api
     container_name: tis-front
     restart: always
     ports:
