@@ -19,7 +19,7 @@ export const registerService = {
       password: dto.password
     };
     console.log(nuevoDato)
-    const response = await fetch('http://localhost:8081/api/usuarios/registro', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(nuevoDato),
