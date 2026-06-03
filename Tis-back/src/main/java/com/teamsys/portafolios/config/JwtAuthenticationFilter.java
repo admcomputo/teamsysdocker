@@ -28,13 +28,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+
             if (jwtUtil.esTokenValido(token)) {
                 String correo = jwtUtil.extraerCorreo(token);
-                // Autenticamos al usuario en el contexto de Spring
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(correo, null, new ArrayList<>());
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(correo, null, new ArrayList<>());
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

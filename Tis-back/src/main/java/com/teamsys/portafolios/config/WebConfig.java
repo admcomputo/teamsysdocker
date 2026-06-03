@@ -14,8 +14,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Aplicamos la protección solo a rutas sensibles
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/usuarios/registro", "/api/usuarios/login","/api/password/**");
+                .addPathPatterns(
+                        "/api/usuarios/registro",
+                        "/api/usuarios/login",
+                        "/api/password/**"
+                );
     }
 }
