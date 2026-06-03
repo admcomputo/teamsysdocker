@@ -3,18 +3,15 @@ services:
     build: ./Tis-back
     container_name: tis-back
     restart: always
-    ports:
-      - "8081:8081"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    network_mode: "host"
     environment:
-      DB_HOST: host.docker.internal
+      DB_HOST: localhost
       DB_PORT: 3306
       DB_NAME: teamsys_db
       DB_USER: teamsys
       DB_PASSWORD: skfeCISavucTSw6
 
-      BREVO_KEY: TU_CLAVE_REAL_DE_BREVO
+      BREVO_KEY: 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
       BREVO_EMAIL: 202103868@est.umss.edu
       URL_FRONT: https://teamsys.apps.cs.umss.edu.bo
       JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_deploy
