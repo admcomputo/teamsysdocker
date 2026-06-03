@@ -1,18 +1,4 @@
 services:
-  db:
-    image: mysql:8.0
-    container_name: teamsys_db
-    restart: always
-    environment:
-      MYSQL_DATABASE: db_portafolios_tis
-      MYSQL_USER: teamsys
-      MYSQL_PASSWORD: teamsys123
-      MYSQL_ROOT_PASSWORD: root123
-    ports:
-      - "3307:3306"
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-
   backend:
     build: ./Tis-back
     container_name: tis-back
@@ -20,18 +6,17 @@ services:
     ports:
       - "8081:8081"
     environment:
-      DB_HOST: db
+      DB_HOST: localhost
       DB_PORT: 3306
-      DB_NAME: db_portafolios_tis
-      DB_USER: root
-      DB_PASSWORD: root123
+      DB_NAME: teamsys_db
+      DB_USER: teamsys
+      DB_PASSWORD: skfeCISavucTSw6
+
       BREVO_KEY: TU_CLAVE_REAL_DE_BREVO
       BREVO_EMAIL: 202103868@est.umss.edu
-      URL_FRONT: http://localhost:5173
-      JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_local
+      URL_FRONT: https://teamsys.apps.cs.umss.edu.bo
+      JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_deploy
       PORT: 8081
-    depends_on:
-      - db
 
   frontend:
     build:
