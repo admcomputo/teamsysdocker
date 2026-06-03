@@ -101,7 +101,7 @@ export const PortafolioViewPage = () => {
           localStorage.getItem("jwt") ||
           localStorage.getItem("token");
 
-        const response = await fetch(`http://localhost:8081/api/portafolio/${id}`, {
+        const response = await fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/portafolio/${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

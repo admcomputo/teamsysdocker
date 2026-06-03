@@ -98,12 +98,12 @@ export const PublicPortafolioPage = () => {
 
         // Llamamos a todos los endpoints públicos del EnlacePublicoController en paralelo
         const [profileRes, expRes, projRes, techRes, softRes, eduRes] = await Promise.all([
-          fetch(`http://localhost:8081/api/enlace/profile/${textoUrl}`),
-          fetch(`http://localhost:8081/api/enlace/experiencias/${textoUrl}`),
-          fetch(`http://localhost:8081/api/enlace/proyectos/${textoUrl}`),
-          fetch(`http://localhost:8081/api/enlace/habilidades-tecnicas/${textoUrl}`),
-          fetch(`http://localhost:8081/api/enlace/habilidades-blandas/${textoUrl}`),
-          fetch(`http://localhost:8081/api/enlace/formaciones/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/experiencias/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/proyectos/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-tecnicas/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-blandas/${textoUrl}`),
+          fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/formaciones/${textoUrl}`),
         ]);
 
         if (!profileRes.ok) {

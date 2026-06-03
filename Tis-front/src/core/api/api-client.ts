@@ -1,8 +1,8 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-//const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://teamsysback.apps.cs.umss.edu.bo/api';
+//const API_URL = import.meta.env.VITE_API_URL || 'https://teamsysback.apps.cs.umss.edu.bo/api';
 //BORRAR ES HARCODEADO const AUTH_TOKEN = 'tokenejemplo455ssXla';
 // Función para obtener el token en cada request
 const getToken = () => sessionStorage.getItem('jwt') || '';
