@@ -17,7 +17,7 @@ import {
   adaptTechnologies,
 } from './experience.adapter';
 
-const API_URL = 'http://localhost:8081';
+const API_URL = 'https://teamsys.apps.cs.umss.edu.bo';
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('jwt');

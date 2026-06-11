@@ -53,7 +53,7 @@ http://localhost:5173
 
 Backend:
 
-http://localhost:8081/api
+https://teamsys.apps.cs.umss.edu.bo/api
 
 Base de datos:
 
