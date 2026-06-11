@@ -6,7 +6,7 @@ import type {
   UpdateProjectDTO,
 } from "./project.dto";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://teamsys.apps.cs.umss.edu.bo";
+const API_URL = import.meta.env.VITE_API_URL || "https://teamsysback.apps.cs.umss.edu.bo";
 
 function getToken() {
   return (

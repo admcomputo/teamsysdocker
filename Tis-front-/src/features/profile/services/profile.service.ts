@@ -5,7 +5,7 @@ import type {
 } from '../models/profile.model';
 import type { ProfilePhotoRequestDto, ProfileRequestDto } from './profile.dto';
 
-const API_URL = 'https://teamsys.apps.cs.umss.edu.bo/api';
+const API_URL = 'https://teamsysback.apps.cs.umss.edu.bo/api';
 
 const getToken = (): string | null => {
   return (

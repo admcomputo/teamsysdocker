@@ -164,14 +164,14 @@ const [
   likesRes,
   likedRes,
 ] = await Promise.all([
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/experiencias/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/proyectos/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/habilidades-tecnicas/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/habilidades-blandas/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/formaciones/${textoUrl}`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/likes/total`),
-  fetch(`https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/liked`, {
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/experiencias/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/proyectos/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-tecnicas/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-blandas/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/formaciones/${textoUrl}`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/likes/total`),
+  fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/liked`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -218,7 +218,7 @@ const [
             localStorage.getItem("jwt") ||
             localStorage.getItem("token");
 
-          const response = await fetch(`https://teamsys.apps.cs.umss.edu.bo/api/portafolio/${id}`, {
+          const response = await fetch(`https://teamsysback.apps.cs.umss.edu.bo/api/portafolio/${id}`, {
             headers: {
               "Content-Type": "application/json",
               ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -244,11 +244,11 @@ if (slug) {
   try {
 
     const likesTotalRes = await fetch(
-      `https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/likes/total`
+      `https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/likes/total`
     );
 
     const likedRes = await fetch(
-      `https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/liked`,
+      `https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/liked`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -305,7 +305,7 @@ if (slug) {
 
     try {
       setProcessingLike(true);
-      const url = `https://teamsys.apps.cs.umss.edu.bo/api/enlace/profile/${likeIdentifier}/like`;
+      const url = `https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${likeIdentifier}/like`;
       const token = !isPublicMode
         ? sessionStorage.getItem("jwt") ||
           sessionStorage.getItem("token") ||

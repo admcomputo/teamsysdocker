@@ -28,7 +28,7 @@ services:
 
       BREVO_KEY: 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
       BREVO_EMAIL: 202103868@est.umss.edu
-      URL_FRONT: https://teamsys.apps.cs.umss.edu.bo
+      URL_FRONT: https://teamsysback.apps.cs.umss.edu.bo
       JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_deploy
       PORT: 8081
     depends_on:
