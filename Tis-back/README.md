@@ -2,7 +2,7 @@
 
 # 
 
-# !\[Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge\&logo=java)
+# !\[Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge\&logo=java)
 
 # !\[Spring Boot](https://img.shields.io/badge/Spring\_Boot-3.5.12-brightgreen?style=for-the-badge\&logo=springboot)
 
@@ -22,7 +22,7 @@
 
 # \## 🛠️ Stack Tecnológico
 
-# \* \*\*Lenguaje:\*\* Java 17 (LTS)
+# \* \*\*Lenguaje:\*\* Java 21 (LTS)
 
 # \* \*\*Framework Principal:\*\* Spring Boot 3.5.12
 
@@ -70,7 +70,7 @@
 
 # \### Requisitos Previos
 
-# \* Java JDK 17 instalado.
+# \* Java JDK 21 instalado.
 
 # \* Maven 3.9+ instalado.
 

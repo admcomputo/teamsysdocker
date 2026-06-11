@@ -26,37 +26,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ESTA ES LA LÍNEA QUE TE FALTABA:
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // Permitir solicitudes OPTIONS para evitar error CORS
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Rutas públicas
-                        .requestMatchers(
-                                "/api/usuarios/registro",
-                                "/api/usuarios/login",
-                                "/api/profesiones",
-                                "/api/password/email",
-                                "/api/portafolios/buscar"
-                        ).permitAll()
-
-                        // Rutas GET públicas
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/proyectos/**",
-                                "/api/enlace/profile/**",
-                                "/api/enlace/experiencias/**",
-                                "/api/enlace/proyectos/**",
-                                "/api/enlace/habilidades-blandas/**",
-                                "/api/enlace/habilidades-tecnicas/**",
-                                "/api/enlace/curriculum/**",
-                                "/api/enlace/formaciones/**"
-                        ).permitAll()
-
-                        // Todo lo demás requiere autenticación
+                        .requestMatchers("/api/usuarios/registro", "/api/usuarios/login", "/api/profesiones","/api/password/email","/api/portafolios/buscar").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/proyectos/**","/api/enlace/profile/**", "/api/enlace/experiencias/**",
+                         "/api/enlace/proyectos/**", "/api/enlace/habilidades-blandas/**", "/api/enlace/habilidades-tecnicas/**", "/api/enlace/curriculum/**",
+                        "/api/enlace/formaciones/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -68,37 +46,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "https://teamsys.apps.cs.umss.edu.bo",
-                "http://localhost:5173"
-        ));
-
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "OPTIONS"
-        ));
-
-        configuration.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "Accept",
-                "Origin"
-        ));
-
-        configuration.setExposedHeaders(List.of(
-                "Authorization"
-        ));
-
+        // Permite cualquier origen, cualquier método y cualquier cabecera
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 

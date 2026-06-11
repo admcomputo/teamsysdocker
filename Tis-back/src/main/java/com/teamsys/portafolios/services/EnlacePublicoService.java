@@ -1,27 +1,8 @@
 package com.teamsys.portafolios.services;
 
-import com.teamsys.portafolios.dto.EnlacePublicoDTO;
-import com.teamsys.portafolios.dto.PortafolioCompletoDTO;
-import com.teamsys.portafolios.dto.UsuarioPublicoDTO;
-import com.teamsys.portafolios.entities.Curriculum;
-import com.teamsys.portafolios.entities.ExperienciaLaboral;
-import com.teamsys.portafolios.entities.FormacionAcademica;
-import com.teamsys.portafolios.entities.HabilidadBlanda;
-import com.teamsys.portafolios.entities.HabilidadTecnica;
-import com.teamsys.portafolios.entities.Proyecto;
-import com.teamsys.portafolios.entities.RedSocial;
-import com.teamsys.portafolios.entities.Tecnologia;
-import com.teamsys.portafolios.entities.Usuario;
-import com.teamsys.portafolios.repositories.CategoriaRepository;
-import com.teamsys.portafolios.repositories.CurriculumRepository;
-import com.teamsys.portafolios.repositories.ExperienciaLaboralRepository;
-import com.teamsys.portafolios.repositories.FormacionRepository;
-import com.teamsys.portafolios.repositories.HabilidadBlandaRepository;
-import com.teamsys.portafolios.repositories.HabilidadTecnicaRepository;
-import com.teamsys.portafolios.repositories.ProyectoRepository;
-import com.teamsys.portafolios.repositories.RedSocialRepository;
-import com.teamsys.portafolios.repositories.TecnologiaRepository;
-import com.teamsys.portafolios.repositories.UsuarioRepository;
+import com.teamsys.portafolios.dto.*;
+import com.teamsys.portafolios.entities.*;
+import com.teamsys.portafolios.repositories.*;
 
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +15,8 @@ import java.text.Normalizer;
 import java.util.Base64;
 import java.util.List;
 import java.util.Collections; // CORRECCIÓN 1: Importación de Collections agregada
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class EnlacePublicoService {
@@ -65,12 +48,103 @@ public class EnlacePublicoService {
     @Autowired
     private CurriculumRepository curriculumRepository;
 
-    
     @Autowired
     private TecnologiaRepository tecnologiaRepository;
 
     @Value("${URL_FRONT}")
     private String dominioPagina;
+
+    // Agrega esta inyección arriba con tus otros @Autowired
+    @Autowired
+    private VistaPerfilRepository vistaPerfilRepository;
+
+    @Autowired
+    private LikePerfilRepository likePerfilRepository;
+// ==========================================
+// MÉTODOS DE VISITAS DE PERFIL
+// ==========================================
+
+    public void registrarVisita(String textoUrl, String correoVisitante) {
+        String correoDueno = obtenerCorreo(textoUrl);
+
+        // 1. Si el dueño se visita a sí mismo, salimos de inmediato
+        if (correoVisitante != null && correoVisitante.equalsIgnoreCase(correoDueno)) {
+            return;
+        }
+
+        Usuario dueno = usuarioRepository.findByCorreo(correoDueno)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime haceUnaHora = ahora.minusHours(1);
+
+        if (correoVisitante != null) {
+            // VISITA REGISTRADA
+            Usuario visitante = usuarioRepository.findByCorreo(correoVisitante)
+                    .orElseThrow(() -> new RuntimeException("Visitante no encontrado"));
+
+            // Evitar duplicados por recarga de página (Ventana de 1 hora)
+            Optional<VistaPerfil> ultimaVisita = vistaPerfilRepository
+                    .findFirstByPerfilAndVisitanteOrderByFechaVisitaDesc(dueno, visitante);
+
+            if (ultimaVisita.isPresent() && ultimaVisita.get().getFechaVisita().isAfter(haceUnaHora)) {
+                return; // Ya registró visita hace menos de una hora, ignoramos
+            }
+
+            vistaPerfilRepository.save(VistaPerfil.builder()
+                    .perfil(dueno)
+                    .visitante(visitante)
+                    .fechaVisita(ahora)
+                    .build());
+        } else {
+            // VISITA ANÓNIMA
+            // Evitar duplicados anónimos en la última hora (revisamos si hubo alguna anónima hace poco)
+            List<VistaPerfil> anonimasRecientes = vistaPerfilRepository.findRecientesAnonimas(dueno, haceUnaHora);
+            if (!anonimasRecientes.isEmpty()) {
+                return; // Ignoramos para no inflar las métricas por F5 de anónimos
+            }
+
+            vistaPerfilRepository.save(VistaPerfil.builder()
+                    .perfil(dueno)
+                    .visitante(null)
+                    .fechaVisita(ahora)
+                    .build());
+        }
+    }
+
+    public long obtenerTotalVisitas(String correoUsuario) {
+        Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return vistaPerfilRepository.countByPerfil(usuario);
+    }
+
+    public List<VistaPerfilDTO> obtenerHistorialVisitas(String correoUsuario) {
+        Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<VistaPerfil> vistas = vistaPerfilRepository.findByPerfilOrderByFechaVisitaDesc(usuario);
+
+        return vistas.stream().map(v -> {
+            if (v.getVisitante() == null) {
+                return VistaPerfilDTO.builder()
+                        .nombre("Usuario Anónimo")
+                        .foto(null)
+                        .profesion("Visitante Externo")
+                        .fechaVisita(v.getFechaVisita())
+                        .build();
+            }
+
+            Usuario vis = v.getVisitante();
+            String profesionStr = vis.getProfesion() != null ? vis.getProfesion().getNombreProfesion() : "Sin profesión";
+
+            return VistaPerfilDTO.builder()
+                    .nombre(vis.getNombre())
+                    .foto(vis.getFoto())
+                    .profesion(profesionStr)
+                    .fechaVisita(v.getFechaVisita())
+                    .build();
+        }).toList();
+    }
 
     // 1. GENERAR: Crea la URL codificando el correo de forma reversible
     public EnlacePublicoDTO generarEnlace(String nombre, String correo) {
@@ -226,6 +300,7 @@ public class EnlacePublicoService {
             List<FormacionAcademica> formaciones = formacionRepository.findByUsuario(usuario);
 
             return formaciones.stream()
+                    .filter(FormacionAcademica::isEsPublico)
                     .map(form -> PortafolioCompletoDTO.FormacionAcademicaResumenDTO.builder()
                             .institucion(form.getInstitucion())
                             .tituloObtenido(form.getTituloObtenido())
@@ -333,6 +408,109 @@ public class EnlacePublicoService {
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener el currículum oficial: " + e.getMessage());
         }
+    }
+// ==========================================
+    //          MÉTODOS DE LIKES
+    // ==========================================
+
+    public String registrarLike(String textoUrl, String correoUsuarioQueDaLike) {
+        // Corrección del bug: se extrae el correo de la URL y se busca al usuario directamente
+        String correoDecodificado = obtenerCorreo(textoUrl);
+        Usuario perfilDestino = usuarioRepository.findByCorreo(correoDecodificado)
+                .orElseThrow(() -> new RuntimeException("Perfil de destino no encontrado"));
+
+        Usuario usuarioLike = usuarioRepository.findByCorreo(correoUsuarioQueDaLike)
+                .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado"));
+
+        if (perfilDestino.getIdUsuario().equals(usuarioLike.getIdUsuario())) {
+            throw new RuntimeException("No puedes darle 'Like' a tu propio perfil");
+        }
+
+        boolean yaTieneLike = likePerfilRepository.existsByPerfilAndUsuarioLike(perfilDestino, usuarioLike);
+        if (yaTieneLike) {
+            eliminarLike(perfilDestino,usuarioLike);
+            return "eliminado";
+        }
+
+        LikePerfil nuevoLike = LikePerfil.builder()
+                .perfil(perfilDestino)
+                .usuarioLike(usuarioLike)
+                .fechaLike(LocalDateTime.now())
+                .build();
+
+        likePerfilRepository.save(nuevoLike);
+        return "registrado";
+    }
+
+    // Obtener lista de likes mediante la URL pública
+    public List<LikePerfilDTO> obtenerLikesPorUrl(String textoUrl) {
+        String correoDecodificado = obtenerCorreo(textoUrl);
+        Usuario perfil = usuarioRepository.findByCorreo(correoDecodificado)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+        return obtenerLikesPorUsuario(perfil);
+    }
+
+public boolean usuarioYaDioLike(
+        String textoUrl,
+        String correoUsuario) {
+
+    String correoPerfil = obtenerCorreo(textoUrl);
+
+    Usuario perfil = usuarioRepository.findByCorreo(correoPerfil)
+            .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+
+    Usuario usuario = usuarioRepository.findByCorreo(correoUsuario)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+    return likePerfilRepository.existsByPerfilAndUsuarioLike(
+            perfil,
+            usuario
+    );
+}
+
+    // Obtener lista de likes pasando la entidad Usuario directamente
+    public List<LikePerfilDTO> obtenerLikesPorUsuario(Usuario perfil) {
+        List<LikePerfil> likes = likePerfilRepository.findByPerfilOrderByFechaLikeDesc(perfil);
+
+        return likes.stream().map(like -> LikePerfilDTO.builder()
+                .nombre(like.getUsuarioLike().getNombre())
+                .foto(like.getUsuarioLike().getFoto())
+                // Ajustado al getter real de tu entidad Usuario: getNombreProfesion()
+                .profesion(like.getUsuarioLike().getProfesion() != null ? like.getUsuarioLike().getProfesion().getNombreProfesion() : null)
+                .fechaLike(like.getFechaLike())
+                .build()
+        ).toList();
+    }
+
+    // Contar total de likes mediante la URL pública
+    public long obtenerTotalLikesPorUrl(String textoUrl) {
+        String correoDecodificado = obtenerCorreo(textoUrl);
+        Usuario perfil = usuarioRepository.findByCorreo(correoDecodificado)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+        return obtenerTotalLikesPorUsuario(perfil);
+    }
+
+    // Contar total de likes pasando la entidad Usuario directamente
+    public long obtenerTotalLikesPorUsuario(Usuario perfil) {
+        return likePerfilRepository.countByPerfil(perfil);
+    }
+
+
+    
+    @org.springframework.transaction.annotation.Transactional
+    public void eliminarLike(Usuario perfilDestino, Usuario usuarioLike) {
+
+        // Buscamos el registro exacto de la combinación perfil <-> usuario
+        // Nota: Si no tienes el método findByPerfilAndUsuarioLike en tu LikePerfilRepository,
+        // puedes declararlo rápidamente o usar una query personalizada.
+        java.util.Optional<LikePerfil> likeExistente = likePerfilRepository
+                .findByPerfilAndUsuarioLike(perfilDestino, usuarioLike);
+
+        if (likeExistente.isEmpty()) {
+            throw new RuntimeException("No has dado 'Like' a este perfil todavía.");
+        }
+
+        likePerfilRepository.delete(likeExistente.get());
     }
 
     @Data @Builder

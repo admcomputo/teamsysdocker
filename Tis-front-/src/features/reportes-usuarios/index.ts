@@ -1,0 +1,1 @@
+export { ReportesUsuariosPage } from './pages/ReportesUsuariosPage';

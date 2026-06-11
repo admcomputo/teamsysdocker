@@ -25,7 +25,7 @@ public class FormacionAcademica {
     @Column(nullable = false)
     private String institucion;
 
-    @Column(nullable = false, name = "titulo_obtenido")
+    @Column(nullable = true, name = "titulo_obtenido")
     private String tituloObtenido;
 
     @Enumerated(EnumType.STRING)
@@ -55,11 +55,14 @@ public class FormacionAcademica {
     // --- ENUMS INTERNOS ---
 
     public enum NivelAcademico {
+        PRIMARIA,
+        SECUNDARIA,
         TECNICO,
         LICENCIATURA,
-        DIPLOMADO,
         MAESTRIA,
-        DOCTORADO
+        DOCTORADO,
+        DIPLOMADO,
+        CURSOS
     }
 
     public enum EstadoFormacion {
