@@ -36,7 +36,7 @@ services:
 
   frontend:
     build:
-      context: ./Tis-front
+      context: ./Tis-front-
       args:
         VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api
     container_name: tis-front
