@@ -1,18 +1,4 @@
 services:
-  db:
-    image: mysql:8.0
-    container_name: teamsys_db
-    restart: always
-    environment:
-      MYSQL_DATABASE: db_portafolios_tis
-      MYSQL_USER: teamsys
-      MYSQL_PASSWORD: teamsys123
-      MYSQL_ROOT_PASSWORD: root123
-    ports:
-      - "3307:3306"
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      
   backend:
     build: ./Tis-back
     container_name: tis-back
@@ -20,19 +6,18 @@ services:
     ports:
       - "8081:8081"
     environment:
-      DB_HOST: db
+      # We target the Coolify database server IP and public port here
+      DB_HOST: 167.157.26.47
       DB_PORT: 3306
       DB_NAME: db_portafolios_tis
-      DB_USER: root
-      DB_PASSWORD: root123
+      DB_USER: teamsys
+      DB_PASSWORD: teamsys123
 
       BREVO_KEY: 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
       BREVO_EMAIL: 202103868@est.umss.edu
       URL_FRONT: https://teamsysback.apps.cs.umss.edu.bo
       JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_deploy
       PORT: 8081
-    depends_on:
-      - db
 
   frontend:
     build:
@@ -40,8 +25,8 @@ services:
       args:
         VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api
     container_name: tis-front
-    restart: always
     ports:
       - "5173:80"
+    restart: always
     depends_on:
       - backend
