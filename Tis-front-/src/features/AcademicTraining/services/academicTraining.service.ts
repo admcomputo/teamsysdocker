@@ -1,6 +1,6 @@
 import type { AcademicTraining } from '../models/academicTraining.model';
 
-const API_URL = 'https://teamsysback.apps.cs.umss.edu.bo/api';
+const API_URL = ' https://teamsysback.apps.cs.umss.edu.bo/api';
 
 export const academicTrainingService = {
   uploadToCloudinary: async (file: File): Promise<string> => {

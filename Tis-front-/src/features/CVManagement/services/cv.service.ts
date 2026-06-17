@@ -5,7 +5,7 @@ import type {
   SaveCVRequest,
 } from '../models/cv.model';
 
-const API_BASE = '/cvs';
+const API_BASE = '/api/cvs';
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'ddzmot3te';
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'cv_files_unsigned';
 const CLOUDINARY_UPLOAD_FOLDER = import.meta.env.VITE_CLOUDINARY_UPLOAD_FOLDER || 'cvs';
@@ -44,7 +44,7 @@ export const cvManagementService = {
 
   async registerCV(payload: SaveCVRequest): Promise<BackendCV> {
     const response = await apiClient.post<BackendResponse<BackendCV>>(
-      `${API_BASE}/registrar`,
+      `${API_BASE}/api/registrar`,
       payload
     );
 
@@ -69,6 +69,6 @@ export const cvManagementService = {
   },
 
   async getPortfolioSummary() {
-    return await apiClient.get('/portafolio/mi-resumen');
+    return await apiClient.get('/api/portafolio/mi-resumen');
   },
 };

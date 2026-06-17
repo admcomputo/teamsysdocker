@@ -4,7 +4,10 @@ import type {
   RedSocialRequestDTO,
 } from './professional-links.dto';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'https://teamsysback.apps.cs.umss.edu.bo';
+const API_URL = import.meta.env.VITE_API_URL ?? ' https://teamsysback.apps.cs.umss.edu.bo';
+
+console.log('VITE_API_URL =', import.meta.env.VITE_API_URL);
+console.log('API_URL final =', API_URL);
 
 const getToken = (): string => {
   const token = sessionStorage.getItem('jwt');

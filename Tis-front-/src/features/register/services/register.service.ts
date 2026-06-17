@@ -19,7 +19,7 @@ export const registerService = {
       password: dto.password
     };
     console.log(nuevoDato)
-    const response = await fetch('https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/registro', {
+    const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/registro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(nuevoDato),

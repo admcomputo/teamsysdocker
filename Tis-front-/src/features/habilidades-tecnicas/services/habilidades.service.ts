@@ -1,6 +1,6 @@
 import { apiClient } from "@/core/api/api-client";
 
-const ENDPOINT = "/habilidades-tecnicas";
+const ENDPOINT = "/api/habilidades-tecnicas";
 
 export type NivelDominio = "BASICO" | "INTERMEDIO" | "AVANZADO" | "EXPERTO";
 
