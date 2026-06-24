@@ -11,7 +11,7 @@ import type {
 
 import type { BuscarPortafoliosResponseDTO } from "./filtros-busqueda.dto";
 
-const API_URL = import.meta.env.VITE_API_URL ?? " https://teamsysback.apps.cs.umss.edu.bo";
+const API_URL =" https://teamsysback.apps.cs.umss.edu.bo";
 
 const USAR_MOCK = false;
 
