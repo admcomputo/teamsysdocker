@@ -5,7 +5,7 @@ export const photoService = {
   getProfilePhoto: async (): Promise<PerfilPhotoData> => {
     const token = sessionStorage.getItem('jwt');
 
-    const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/perfil', {
+    const response = await fetch('http://localhost:8081/api/usuarios/perfil', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const photoService = {
   ): Promise<PhotoProfileResponse> => {
     const token = sessionStorage.getItem('jwt');
 
-    const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/foto-perfil', {
+    const response = await fetch('http://localhost:8081/api/usuarios/foto-perfil', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

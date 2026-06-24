@@ -26,7 +26,7 @@ export const loginService = {
       password: pass
     };
 
-    const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/login', {
+    const response = await fetch('http://localhost:8081/api/usuarios/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
