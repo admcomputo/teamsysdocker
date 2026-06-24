@@ -4,7 +4,7 @@
     ReporteUsuariosResponse,
   } from '../models/reporte-usuario.model';
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+  const API_URL = import.meta.env.VITE_API_URL || ' https://teamsysback.apps.cs.umss.edu.bo';
 
   /**
    * Cambia esto a false cuando el backend ya esté listo.
