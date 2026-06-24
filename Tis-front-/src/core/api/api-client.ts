@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 
-const BASE_URL ='https://teamsysback.apps.cs.umss.edu.bo';
+const BASE_URL = import.meta.env.VITE_API_URL || ' https://teamsysback.apps.cs.umss.edu.bo';
 //const API_URL = import.meta.env.VITE_API_URL || ' https://teamsysback.apps.cs.umss.edu.bo/api';
 //BORRAR ES HARCODEADO const AUTH_TOKEN = 'tokenejemplo455ssXla';
 // Función para obtener el token en cada request

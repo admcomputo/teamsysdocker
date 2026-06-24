@@ -44,7 +44,7 @@ export const cvManagementService = {
 
   async registerCV(payload: SaveCVRequest): Promise<BackendCV> {
     const response = await apiClient.post<BackendResponse<BackendCV>>(
-      `${API_BASE}/registrar`,
+      `${API_BASE}/api/registrar`,
       payload
     );
 
