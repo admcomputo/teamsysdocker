@@ -6,7 +6,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # We target the Coolify database server IP and public port here
+      # Base de datos ya creada, se te pasó las credenciales para modificarlos a tu gusto.
       DB_HOST: 167.157.26.47
       DB_PORT: 3306
       DB_NAME: db_portafolios_tis
