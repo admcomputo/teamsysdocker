@@ -5,8 +5,7 @@ import type {
 } from '../models/profile.model';
 import type { ProfilePhotoRequestDto, ProfileRequestDto } from './profile.dto';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api`;
-
+const API_URL = import.meta.env.VITE_API_URL;
 const getToken = (): string | null => {
   return (
     sessionStorage.getItem('jwt') ||
