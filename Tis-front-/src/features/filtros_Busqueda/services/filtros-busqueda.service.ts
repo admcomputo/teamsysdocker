@@ -16,7 +16,7 @@ const buscarPortafoliosBackend = async (
 ): Promise<RespuestaBusquedaPortafolios> => {
   const requestDTO = filtrosBusquedaToRequestDTO(filtros);
 
-  const response = await fetch(`${API_URL}/portafolios/buscar`, {
+  const response = await fetch(`${API_URL}/api/portafolios/buscar`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
