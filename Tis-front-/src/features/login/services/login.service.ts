@@ -18,6 +18,14 @@ interface UsuarioRespuestaDTO {
     foto?: string;
   };
 }
+const rawApiUrl =
+  import.meta.env.VITE_API_URL || 'https://teamsysback.apps.cs.umss.edu.bo/api';
+
+const cleanApiUrl = rawApiUrl.replace(/\/+$/, '');
+
+const API_URL = cleanApiUrl.endsWith('/api')
+  ? cleanApiUrl
+  : `${cleanApiUrl}/api`;
 
 export const loginService = {
   async login(email: string, pass: string): Promise<User> {
@@ -26,8 +34,7 @@ export const loginService = {
       password: pass
     };
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/login`, {
-      method: 'POST',
+const response = await fetch(`${API_URL}/usuarios/login`, {      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
