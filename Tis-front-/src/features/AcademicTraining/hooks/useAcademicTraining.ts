@@ -15,7 +15,15 @@ export const useAcademicTraining = () => {
   const [degree, setDegree] = useState(editingTraining?.degree || '');
   const [level, setLevel] = useState(editingTraining?.level || '');
   const [fieldOfStudy, setFieldOfStudy] = useState(editingTraining?.fieldOfStudy || '');
-
+const [errors, setErrors] = useState({
+  institution: '',
+  degree: '',
+  level: '',
+  fieldOfStudy: '',
+  startDate: '',
+  endDate: '',
+  status: '',
+});
   // Format date correctly for input type="date"
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
@@ -36,9 +44,69 @@ export const useAcademicTraining = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const { showToast } = useToast();
+const validate = () => {
+  const newErrors = {
+    institution: '',
+    degree: '',
+    level: '',
+    fieldOfStudy: '',
+    startDate: '',
+    endDate: '',
+    status: '',
+  };
 
+  let isValid = true;
+
+  if (!institution.trim()) {
+    newErrors.institution = 'La institución es obligatoria';
+    isValid = false;
+  }
+
+  if (!level) {
+    newErrors.level = 'Seleccione un nivel';
+    isValid = false;
+  }
+
+  if (
+    level !== 'PRIMARIA' &&
+    level !== 'SECUNDARIA' &&
+    level !== 'CURSOS' &&
+    !degree.trim()
+  ) {
+    newErrors.degree = 'La carrera es obligatoria';
+    isValid = false;
+  }
+
+  if (
+    level !== 'PRIMARIA' &&
+    level !== 'SECUNDARIA' &&
+    !fieldOfStudy.trim()
+  ) {
+    newErrors.fieldOfStudy = 'El área de estudio es obligatoria';
+    isValid = false;
+  }
+
+  if (!startDate) {
+    newErrors.startDate = 'La fecha de inicio es obligatoria';
+    isValid = false;
+  }
+
+  if (endDate && startDate > endDate) {
+    newErrors.endDate =
+      'La fecha de finalización debe ser mayor a la fecha de inicio';
+    isValid = false;
+  }
+
+
+  setErrors(newErrors);
+  return isValid;
+};
   const handleAddTraining = async (e: React.FormEvent) => {
     e.preventDefault();
+      if (!validate()) {
+    return;
+  }
+
     setIsLoading(true);
 
     if (!level) {
@@ -133,5 +201,7 @@ export const useAcademicTraining = () => {
     isEditing: !!id,
     handleAddTraining,
     handleCancel,
+    errors,
+    setErrors,
   };
 };

@@ -95,11 +95,22 @@ const ExperienceForm = ({
       onChange={(e) => onChange('especializacion', e.target.value)}
       className="w-full rounded-xl border border-[#1E3A5F] bg-[#0F223D] px-4 py-3 text-[#E5E7EB] outline-none transition focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/30"
     >
-      <option value="">Selecciona especialización</option>
       <option value="Frontend">Frontend</option>
-      <option value="Backend">Backend</option>
-      <option value="Full Stack">Full Stack</option>
-      <option value="Desarrollo Móvil">Desarrollo Móvil</option>
+<option value="Backend">Backend</option>
+<option value="Full Stack">Full Stack</option>
+<option value="Desarrollo Móvil">Desarrollo Móvil</option>
+<option value="QA / Testing">QA / Testing</option>
+<option value="DevOps">DevOps</option>
+<option value="Base de Datos">Base de Datos</option>
+<option value="Ciberseguridad">Ciberseguridad</option>
+<option value="Cloud Computing">Cloud Computing</option>
+<option value="UI / UX">UI / UX</option>
+<option value="Ciencia de Datos">Ciencia de Datos</option>
+<option value="Inteligencia Artificial">Inteligencia Artificial</option>
+<option value="Soporte Técnico">Soporte Técnico</option>
+<option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
+<option value="Arquitectura de Software">Arquitectura de Software</option>
+<option value="Análisis de Sistemas">Análisis de Sistemas</option>
     </select>
     {errors.especializacion && (
       <p className="mt-1 text-sm text-rose-400">

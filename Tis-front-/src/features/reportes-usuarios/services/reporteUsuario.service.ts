@@ -4,7 +4,7 @@
     ReporteUsuariosResponse,
   } from '../models/reporte-usuario.model';
 
-  const API_URL = import.meta.env.VITE_API_URL || ' https://teamsysback.apps.cs.umss.edu.bo';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   /**
    * Cambia esto a false cuando el backend ya esté listo.
@@ -137,7 +137,7 @@
     const token = sessionStorage.getItem('jwt');
 
     const response = await axios.get<ReporteUsuariosResponse>(
-      `${API_URL}/api/admin/reportes/usuarios`,
+      `${API_URL}/admin/reportes/usuarios`,
       {
         params: {
           fechaInicio: filtros.fechaInicio || undefined,

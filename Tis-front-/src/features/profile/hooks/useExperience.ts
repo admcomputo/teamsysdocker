@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useToast } from '@shared/hooks/useToast';
 import type {
   Experience,
   ExperienceErrors,
@@ -50,7 +51,7 @@ export const useExperience = () => {
   const [saving, setSaving] = useState<boolean>(false);
   const [message, setMessage] = useState<ExperienceMessage | null>(null);
   const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
-
+const { showToast } = useToast();
   const loadExperiences = async () => {
   try {
       setLoading(true);
@@ -252,18 +253,18 @@ if (
     try {
       setSaving(true);
 
-      if (editingExperience) {
-        await updateExperience(editingExperience.id, formData);
-      } else {
-        await createExperience(formData);
-      }
+if (editingExperience) {
+  const response = await updateExperience(
+    editingExperience.id,
+    formData,
+  );
 
-      await loadExperiences();
-      setFormData(initialForm);
-      setErrors({});
-      setEditingExperience(null);
-      setMessage(null);
+  showToast(response.message, 'success');
+} else {
+  const response = await createExperience(formData);
 
+  showToast(response.message, 'success');
+}
       return true;
     } catch (error) {
       setMessage({

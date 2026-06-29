@@ -17,7 +17,7 @@ import {
   adaptTechnologies,
 } from './experience.adapter';
 
-const API_URL = ' https://teamsysback.apps.cs.umss.edu.bo';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('jwt');
@@ -29,7 +29,7 @@ const getAuthHeaders = () => {
 };
 
 export const getTechnologies = async (): Promise<Technology[]> => {
-  const response = await fetch(`${API_URL}/api/tecnologias`, {
+  const response = await fetch(`${API_URL}/tecnologias`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
@@ -44,7 +44,7 @@ export const getTechnologies = async (): Promise<Technology[]> => {
 };
 
 export const getExperiences = async (): Promise<Experience[]> => {
-  const response = await fetch(`${API_URL}/api/experiencias/mis-experiencias`, {
+  const response = await fetch(`${API_URL}/experiencias/mis-experiencias`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
@@ -60,37 +60,47 @@ export const getExperiences = async (): Promise<Experience[]> => {
 
 export const createExperience = async (
   formData: ExperienceFormData,
-): Promise<Experience> => {
+): Promise<{
+  message: string;
+  data: Experience;
+}> => {
   const payload = adaptExperienceToCreateDto(formData);
 
-  console.log('PAYLOAD EXPERIENCE:', payload);
-
-  const response = await fetch(`${API_URL}/api/experiencias/registrar`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(payload),
-  });
+  const response = await fetch(
+    `${API_URL}/experiencias/registrar`,
+    {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    },
+  );
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('ERROR BACKEND EXPERIENCE:', errorText);
-    throw new Error(errorText || 'No se pudo registrar la experiencia.');
+    throw new Error(errorText);
   }
 
-  const data = (await response.json()) as CreateExperienceResponseDto;
-  return adaptExperience(data.data);
-};
+const data =
+  (await response.json()) as CreateExperienceResponseDto;
 
+return {
+  message: data.message,
+  data: adaptExperience(data.data),
+};
+};
 export const updateExperience = async (
   id: number,
   formData: ExperienceFormData,
-): Promise<Experience> => {
+): Promise<{
+  message: string;
+  data: Experience;
+}> => {
   const payload = {
     id,
     ...adaptExperienceToCreateDto(formData),
   };
 
-  const response = await fetch(`${API_URL}/api/experiencias/actualizar/${id}`, {
+  const response = await fetch(`${API_URL}/experiencias/actualizar/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
@@ -101,12 +111,17 @@ export const updateExperience = async (
     throw new Error(errorText || 'No se pudo actualizar la experiencia.');
   }
 
-  const data = (await response.json()) as CreateExperienceResponseDto;
-  return adaptExperience(data.data);
+ const data =
+  (await response.json()) as CreateExperienceResponseDto;
+
+return {
+  message: data.message,
+  data: adaptExperience(data.data),
+};
 };
 
 export const deleteExperience = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/api/experiencias/eliminar/${id}`, {
+  const response = await fetch(`${API_URL}/experiencias/eliminar/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,

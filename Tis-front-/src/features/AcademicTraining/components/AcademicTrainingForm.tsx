@@ -20,6 +20,8 @@ export const AcademicTrainingForm = () => {
     isEditing,
     handleAddTraining,
     handleCancel,
+    errors,
+    setErrors,
   } = useAcademicTraining();
 
   const getTodayString = () => {
@@ -67,10 +69,17 @@ export const AcademicTrainingForm = () => {
             type="text"
             placeholder="Ej. Universidad Mayor de San Simón"
             value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            required
+            onChange={(e) => {
+  setInstitution(e.target.value);
+  setErrors((prev) => ({ ...prev, institution: "" }));
+}}
             className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
           />
+{errors.institution && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.institution}
+  </p>
+)}
 
           <div className="flex flex-col gap-1.5 w-full">
             <label className="text-sm font-medium text-text-secondary ml-1">
@@ -78,7 +87,10 @@ export const AcademicTrainingForm = () => {
             </label>
             <select
               value={level}
-              onChange={(e) => setLevel(e.target.value)}
+              onChange={(e) => {
+  setLevel(e.target.value);
+  setErrors((prev) => ({ ...prev, level: "" }));
+}}
               className="flex h-11 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent-neon/50 transition-all duration-200"
             >
               <option value="" className="bg-brand-azul-profundo text-white">Seleccionar</option>
@@ -91,51 +103,100 @@ export const AcademicTrainingForm = () => {
               <option value="DIPLOMADO" className="bg-brand-azul-profundo text-white">Diplomado</option>
               <option value="CURSOS" className="bg-brand-azul-profundo text-white">Cursos</option>
             </select>
+
+{errors.level && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.level}
+  </p>
+)}
           </div>
 
-          {level !== 'PRIMARIA' && level !== 'SECUNDARIA' && level !== 'CURSOS' && (
-            <Input
-              label="Carrera"
-              type="text"
-              placeholder="Ej. Ingeniería de Sistemas"
-              value={degree}
-              onChange={(e) => setDegree(e.target.value)}
-              required
-              className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
-            />
-          )}
-          {level !== 'PRIMARIA' && level !== 'SECUNDARIA' && (
-            <Input
-              label="Área de estudio"
-              type="text"
-              placeholder="Ej. Desarrollo de Software"
-              value={fieldOfStudy}
-              onChange={(e) => setFieldOfStudy(e.target.value)}
-              required
-              className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
-            />
-          )}
+{level !== 'PRIMARIA' &&
+ level !== 'SECUNDARIA' &&
+ level !== 'CURSOS' && (
+  <>
+    <Input
+      label="Carrera"
+      type="text"
+      placeholder="Ej. Ingeniería de Sistemas"
+      value={degree}
+      onChange={(e) => {
+  setDegree(e.target.value);
+  setErrors((prev) => ({ ...prev, degree: ""}));
+}}
+      className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
+    />
+
+    {errors.degree && (
+      <p className="text-red-500 text-sm mt-1">
+        {errors.degree}
+      </p>
+    )}
+  </>
+)}
+{level !== 'PRIMARIA' &&
+ level !== 'SECUNDARIA' && (
+  <>
+    <Input
+      label="Área de estudio"
+      type="text"
+      placeholder="Ej. Desarrollo de Software"
+      value={fieldOfStudy}
+      onChange={(e) => {
+  setFieldOfStudy(e.target.value);
+  setErrors((prev) => ({ ...prev, fieldOfStudy: "" }));
+}}
+      className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
+    />
+
+    {errors.fieldOfStudy && (
+      <p className="text-red-500 text-sm mt-1">
+        {errors.fieldOfStudy}
+      </p>
+    )}
+  </>
+)}
 
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Fecha de inicio"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-              max={endDate || today}
-              className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
-            />
+  <div>
+    <Input
+      label="Fecha de inicio"
+      type="date"
+      value={startDate}
+      onChange={(e) => {
+  setStartDate(e.target.value);
+  setErrors((prev) => ({ ...prev, startDate:""}));
+}}
+      max={endDate || today}
+      className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
+    />
 
-            <Input
-              label="Fecha de finalización"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              min={startDate}
-              max={today}
-              className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
-            />
+    {errors.startDate && (
+      <p className="text-red-500 text-sm mt-1">
+        {errors.startDate}
+      </p>
+    )}
+  </div>
+         <div>
+  <Input
+    label="Fecha de finalización"
+    type="date"
+    value={endDate}
+    onChange={(e) => {
+  setEndDate(e.target.value);
+  setErrors((prev) => ({ ...prev, endDate: "" }));
+}}
+    min={startDate}
+    max={today}
+    className="bg-white/5 border-white/10 focus:border-brand-accent-neon/50"
+  />
+
+  {errors.endDate && (
+    <p className="text-red-500 text-sm mt-1">
+      {errors.endDate}
+    </p>
+  )}
+</div>
           </div>
 
           {showStatusField && (
@@ -153,6 +214,11 @@ export const AcademicTrainingForm = () => {
                     onChange={(e) => setStatus(e.target.value)}
                     className="w-4 h-4 accent-brand-accent-neon"
                   />
+                  {errors.status && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.status}
+  </p>
+)}
                   <span className="text-sm text-text-primary group-hover:text-brand-accent-neon transition-colors">Finalizado</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer group">
@@ -164,6 +230,11 @@ export const AcademicTrainingForm = () => {
                     onChange={(e) => setStatus(e.target.value)}
                     className="w-4 h-4 accent-brand-accent-neon"
                   />
+                  {errors.status && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.status}
+  </p>
+)}
                   <span className="text-sm text-text-primary group-hover:text-brand-accent-neon transition-colors">Incompleto</span>
                 </label>
               </div>
@@ -176,7 +247,10 @@ export const AcademicTrainingForm = () => {
             </label>
             <RichTextEditor
               value={description}
-              onChange={(value) => setDescription(value)}
+              onChange={(value) => {
+  setDescription(value);
+  setErrors((prev) => ({ ...prev, description: ""}));
+}}
               placeholder="Ej. Enfoque en desarrollo web y bases de datos"
             />
           </div>

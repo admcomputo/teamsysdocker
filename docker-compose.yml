@@ -6,7 +6,6 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # Base de datos ya creada, se te pasó las credenciales para modificarlos a tu gusto.
       DB_HOST: 167.157.26.47
       DB_PORT: 3306
       DB_NAME: db_portafolios_tis
@@ -15,15 +14,19 @@ services:
 
       BREVO_KEY: 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
       BREVO_EMAIL: 202103868@est.umss.edu
-      URL_FRONT: https://teamsysback.apps.cs.umss.edu.bo
+      URL_FRONT: https://teamsys.apps.cs.umss.edu.bo
       JWT_SECRET: una_clave_secreta_muy_larga_y_segura_para_deploy
       PORT: 8081
 
   frontend:
     build:
       context: ./Tis-front-
+      dockerfile: Dockerfile
       args:
         VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api
+        VITE_CLOUDINARY_CLOUD_NAME: drcjlwd3h
+        VITE_CLOUDINARY_UPLOAD_PRESET: mhflu6et
+        VITE_CLOUDINARY_UPLOAD_FOLDER: cvs
     container_name: tis-front
     ports:
       - "5173:80"

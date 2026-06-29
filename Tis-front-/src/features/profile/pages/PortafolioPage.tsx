@@ -105,6 +105,17 @@ interface PortafolioCompleto {
   redesSociales: RedSocialResumenDTO[];
 }
 
+// Agregar esto después de la interfaz PortafolioCompleto
+interface VisibilidadAjustes {
+  nombreUsr: boolean;
+  correoUsr: boolean;
+  biografiaUsr: boolean;
+  telefonoUsr: boolean;
+  direccionUsr: boolean;
+  profesionUsr: boolean;
+  universidadUsr: boolean;
+}
+
 // ==================== UTILIDAD: extraer slug de enlacePublico ====================
 const extraerSlugDeEnlacePublico = (enlacePublico: string | null): string | null => {
   if (!enlacePublico) return null;
@@ -135,6 +146,7 @@ const [totalLikes, setTotalLikes] = useState(0);
 const [liked, setLiked] = useState(false);
 const [processingLike, setProcessingLike] = useState(false);
   const [slugPrivado, setSlugPrivado] = useState<string | null>(null);
+  const [visibilidad, setVisibilidad] = useState<VisibilidadAjustes | null>(null);
 
   const isPublicMode = !!textoUrl;
   const identifier = isPublicMode ? textoUrl! : id!;
@@ -164,14 +176,14 @@ const [
   likesRes,
   likedRes,
 ] = await Promise.all([
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/experiencias/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/proyectos/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-tecnicas/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/habilidades-blandas/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/formaciones/${textoUrl}`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/likes/total`),
-  fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${textoUrl}/liked`, {
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/profile/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/experiencias/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/proyectos/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/habilidades-tecnicas/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/habilidades-blandas/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/formaciones/${textoUrl}`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/profile/${textoUrl}/likes/total`),
+  fetch(`${import.meta.env.VITE_API_URL}/enlace/profile/${textoUrl}/liked`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -218,7 +230,7 @@ const [
             localStorage.getItem("jwt") ||
             localStorage.getItem("token");
 
-          const response = await fetch(` https://teamsysback.apps.cs.umss.edu.bo/api/portafolio/${id}`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/portafolio/${id}`, {
             headers: {
               "Content-Type": "application/json",
               ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -228,6 +240,8 @@ const [
           if (!response.ok) throw new Error("No se pudo cargar el portafolio.");
           const data = await response.json();
           setPortafolio(data);
+          // En modo privado (dueño del perfil), todos los datos son visibles
+setVisibilidad(null);
 
           // 🔥 CLAVE: extraer el slug real del enlace público (evita problemas de encoding)
           let slug = null;
@@ -238,23 +252,50 @@ const [
             slug = correoToSlug(data.correo);
           }
           setSlugPrivado(slug);
+           console.log("🔗 Slug generado:", slug);
 
           // Cargar total de likes usando el slug
 if (slug) {
   try {
 
     const likesTotalRes = await fetch(
-      ` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/likes/total`
+      `${import.meta.env.VITE_API_URL}/enlace/profile/${slug}/likes/total`
     );
 
     const likedRes = await fetch(
-      ` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${slug}/liked`,
+      `${import.meta.env.VITE_API_URL}/enlace/profile/${slug}/liked`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       }
     );
+     console.log("cargando visibilidad ");
+    const visibilidadRes = await fetch(`${import.meta.env.VITE_API_URL}/visibilidad/mis-ajustes`, {
+  headers: {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  },
+});
+console.log("satatus visibilidad ", visibilidadRes.status);
+if (visibilidadRes.ok) {
+  const visibilidadData = await visibilidadRes.json();
+  console.log("visibilidad cargada: ", visibilidadData);
+  setVisibilidad(visibilidadData);
+}else {
+      const errorText = await visibilidadRes.text();
+      console.error("error cargar viviblilidad:", visibilidadRes.status, errorText)
+      console.warn("Error al cargar visibilidad:", visibilidadRes.status);
+      // Si falla, establecer valores por defecto (todos false por seguridad)
+      setVisibilidad({
+        correoUsr: false,
+        telefonoUsr: false,
+        direccionUsr: false,
+        nombreUsr: false,
+        biografiaUsr: false,
+        profesionUsr: false,
+        universidadUsr: false,
+      });
+    }
 
     if (likesTotalRes.ok) {
       const { totalLikes } = await likesTotalRes.json();
@@ -268,6 +309,16 @@ if (slug) {
 
   } catch (err) {
     console.error("Error al cargar likes", err);
+    console.error("Error al cargar visibilidad:", err);
+    setVisibilidad({
+      correoUsr: false,
+      telefonoUsr: false,
+      direccionUsr: false,
+      nombreUsr: false,
+      biografiaUsr: false,
+      profesionUsr: false,
+      universidadUsr: false,
+    });
   }
 }
         }
@@ -305,7 +356,7 @@ if (slug) {
 
     try {
       setProcessingLike(true);
-      const url = ` https://teamsysback.apps.cs.umss.edu.bo/api/enlace/profile/${likeIdentifier}/like`;
+      const url = `${import.meta.env.VITE_API_URL}/enlace/profile/${likeIdentifier}/like`;
       const token = !isPublicMode
         ? sessionStorage.getItem("jwt") ||
           sessionStorage.getItem("token") ||
@@ -579,24 +630,24 @@ if (data.message.includes("registrado")) {
               <div className="bg-card-bg/50 backdrop-blur-sm border border-card-border p-6 rounded-2xl">
                 <h3 className="text-lg font-bold text-text-primary border-b border-card-border/50 pb-3 mb-4">Información Rápida</h3>
                 <div className="space-y-4 text-sm">
-                  {portafolio.correo && (
-                    <div>
-                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Correo Electrónico</span>
-                      <span className="text-text-primary font-medium">{portafolio.correo}</span>
-                    </div>
-                  )}
-                  {portafolio.telefono && (
-                    <div>
-                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Teléfono / WhatsApp</span>
-                      <span className="text-text-primary font-medium">{portafolio.telefono}</span>
-                    </div>
-                  )}
-                  {portafolio.direccion && (
-                    <div>
-                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Ubicación</span>
-                      <span className="text-text-primary font-medium">{portafolio.direccion}</span>
-                    </div>
-                  )}
+                  {visibilidad !== null && portafolio.correo && visibilidad.correoUsr === true && (
+  <div>
+    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Correo Electrónico</span>
+    <span className="text-text-primary font-medium">{portafolio.correo}</span>
+  </div>
+)}
+{visibilidad !== null && portafolio.telefono && visibilidad.telefonoUsr === true && (
+  <div>
+    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Teléfono / WhatsApp</span>
+    <span className="text-text-primary font-medium">{portafolio.telefono}</span>
+  </div>
+)}
+{visibilidad !== null && portafolio.direccion && visibilidad.direccionUsr === true &&(
+  <div>
+    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Ubicación</span>
+    <span className="text-text-primary font-medium">{portafolio.direccion}</span>
+  </div>
+)}
                   <div>
                     <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Modalidad Preferida</span>
                     <span className="text-brand-morado font-semibold">

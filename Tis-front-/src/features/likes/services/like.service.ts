@@ -4,7 +4,7 @@ import type {
   LikeResponseDTO,
 } from './likes.dto';
 
-const API_URL = ' https://teamsysback.apps.cs.umss.edu.bo/api/enlace';
+const API_URL = `${import.meta.env.VITE_API_URL}/enlace`;
 
 
 const getToken = (): string | null => {

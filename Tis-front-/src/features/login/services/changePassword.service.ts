@@ -26,7 +26,7 @@ export const changePasswordService = {
     };
 
     try {
-      const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/password/reset-password', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/password/reset-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -9,6 +9,7 @@ export interface BuscarPortafoliosRequestDTO {
   profesion?: string | null;
   especializacion?: string | null;
   tecnologia?: string | null;
+  empresa?: string | null;
   formacionAcademica?: string | null;
   disponibilidad?: Disponibilidad | null;
   modalidadTrabajo?: "REMOTO" | "PRESENCIAL" | "HIBRIDO" | null;
@@ -32,6 +33,7 @@ export interface PortafolioResultadoResponseDTO {
   idiomas?: string[] | null;
   experienciaAnios?: number | null;
   cantidadProyectos?: number | null;
+  empresas?: string[] | null;
   fotoPerfilUrl?: string | null;
   urlPublica: string;
   resumen?: string | null;

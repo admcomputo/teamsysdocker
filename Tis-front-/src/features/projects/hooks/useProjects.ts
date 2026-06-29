@@ -4,10 +4,13 @@ import type {
   ProjectStatus,
   Technology,
 } from "../models/project.model";
+
+import type {ProjectFormErrors}from "../utils/validation";
+
 import type { ProjectResponseDTO } from "../services/project.dto";
 import { projectService } from "../services/project.service";
 import { validateProjectForm } from "../utils/validation";
-
+import { useToast } from '@shared/hooks/useToast';
 const initialForm: ProjectFormModel = {
   nombreProyecto: "",
   rolProyecto: "Full Stack Developer",
@@ -89,9 +92,11 @@ export function useProjects(options?: UseProjectsOptions) {
   const [form, setForm] = useState<ProjectFormModel>(initialForm);
   const [technologies, setTechnologies] = useState<Technology[]>([]);
   const [loadingTechnologies, setLoadingTechnologies] = useState(false);
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+const [errors, setErrors] =
+  useState<ProjectFormErrors>({});
   async function loadTechnologies() {
     try {
       setLoadingTechnologies(true);
@@ -311,91 +316,106 @@ export function useProjects(options?: UseProjectsOptions) {
     }));
   }
 
-  async function saveProject() {
-    const validationError = validateProjectForm(form);
+async function saveProject() {
+  const validationErrors = validateProjectForm(form);
 
-    if (validationError) {
-      setMessage(validationError);
-      return;
+  setErrors(validationErrors);
+
+  if (Object.keys(validationErrors).length > 0) {
+    return;
+  }
+
+  try {
+    setLoading(true);
+    setMessage("");
+
+    const urlsImagenes = await Promise.all(
+      form.imagenes.map(async (imagen) => {
+        if (imagen.file) {
+          return projectService.uploadImageToCloudinary(imagen.file);
+        }
+        return imagen.url;
+      })
+    );
+
+    const urlPdfs = await Promise.all(
+      form.pdfs.map(async (pdf) => {
+        if (pdf.file) {
+          return projectService.uploadPdfToCloudinary(pdf.file);
+        }
+        return pdf.url;
+      })
+    );
+
+    const payload = {
+      titulo: form.nombreProyecto,
+      descripcion: form.descripcionProyecto,
+      tecnologiaIds: form.tecnologiasIds,
+      nuevasTecnologias: form.nuevasTecnologias,
+      enlaceGithub: form.urlRepositorio || undefined,
+      enlaceDemo: form.urlDemo || undefined,
+      urlsImagenes,
+      urlPdfs,
+      esPublico: form.privacidad === "PUBLICO",
+      destacar: projectToEdit?.destacar ?? false,
+      rolProyecto: form.rolProyecto || undefined,
+      urlsAdicionales: form.urlsAdicionales.filter(
+        (url) => url.trim() !== ""
+      ),
+      fechaInicio: form.fechaInicio || undefined,
+      fechaFinalizacion:
+        form.estadoProyecto === "FINALIZADO"
+          ? form.fechaFinalizacion || undefined
+          : undefined,
+      estadoProyecto: form.estadoProyecto,
+    };
+
+    let response;
+
+    if (isEditMode && projectToEdit) {
+      response = await projectService.updateProject(
+        projectToEdit.idProyecto,
+        payload
+      );
+    } else {
+      response = await projectService.createProject(payload);
+      setForm(initialForm);
     }
 
-    try {
-      setLoading(true);
-      setMessage("Subiendo archivos a Cloudinary...");
-
-      const urlsImagenes = await Promise.all(
-        form.imagenes.map(async (imagen) => {
-          if (imagen.file) {
-            return projectService.uploadImageToCloudinary(imagen.file);
-          }
-
-          return imagen.url;
-        })
+    if (response.success) {
+      showToast(
+        response.message ||
+          (isEditMode
+            ? "Proyecto actualizado correctamente"
+            : "Proyecto creado correctamente"),
+        "success"
       );
-
-      const urlPdfs = await Promise.all(
-        form.pdfs.map(async (pdf) => {
-          if (pdf.file) {
-            return projectService.uploadPdfToCloudinary(pdf.file);
-          }
-
-          return pdf.url;
-        })
-      );
-
-      const payload = {
-        titulo: form.nombreProyecto,
-        descripcion: form.descripcionProyecto,
-        tecnologiaIds: form.tecnologiasIds,
-        nuevasTecnologias: form.nuevasTecnologias,
-
-        enlaceGithub: form.urlRepositorio || undefined,
-        enlaceDemo: form.urlDemo || undefined,
-
-        urlsImagenes,
-        urlPdfs,
-
-        esPublico: form.privacidad === "PUBLICO",
-        destacar: projectToEdit?.destacar ?? false,
-
-        rolProyecto: form.rolProyecto || undefined,
-        urlsAdicionales: form.urlsAdicionales.filter(
-          (url) => url.trim() !== ""
-        ),
-        fechaInicio: form.fechaInicio || undefined,
-        fechaFinalizacion:
-          form.estadoProyecto === "FINALIZADO"
-            ? form.fechaFinalizacion || undefined
-            : undefined,
-        estadoProyecto: form.estadoProyecto,
-      };
-
-      setMessage(
-        isEditMode ? "Actualizando proyecto..." : "Guardando proyecto..."
-      );
-
-      if (isEditMode && projectToEdit) {
-        await projectService.updateProject(projectToEdit.idProyecto, payload);
-        setMessage("Proyecto actualizado correctamente.");
-      } else {
-        await projectService.createProject(payload);
-        setMessage("Proyecto registrado correctamente.");
-        setForm(initialForm);
-      }
 
       options?.onSaved?.();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : isEditMode
-            ? "No se pudo actualizar el proyecto."
-            : "No se pudo registrar el proyecto."
-      );
-    } finally {
-      setLoading(false);
+    } else {
+      const msg =
+        response.message ||
+        (isEditMode
+          ? "No se pudo actualizar el proyecto"
+          : "No se pudo crear el proyecto");
+
+      setMessage(msg);
+      showToast(msg, "error");
     }
+  } catch (error) {
+    const msg =
+      error instanceof Error
+        ? error.message
+        : isEditMode
+        ? "No se pudo actualizar el proyecto."
+        : "No se pudo registrar el proyecto.";
+
+    setMessage(msg);
+    showToast(msg, "error");
+  } finally {
+    setLoading(false);
   }
+}
 
   return {
     form,
@@ -417,5 +437,6 @@ export function useProjects(options?: UseProjectsOptions) {
     addPdfs,
     removePdf,
     saveProject,
+    errors,
   };
 }

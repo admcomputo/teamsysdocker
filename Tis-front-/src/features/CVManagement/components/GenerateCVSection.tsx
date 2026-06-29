@@ -176,7 +176,7 @@ const generateCVHTML = (data: any, templateId: string): string => {
           
           ${data.experienciasLaborales?.length ? `
             <div class="section">
-              <h2 class="section-title">💼 Experiencia Laboral</h2>
+              <h2 class="section-title"> Experiencia Laboral</h2>
               ${data.experienciasLaborales.map((exp: any) => `
                 <div class="job-item">
                   <div class="job-title">${exp.cargoPuesto || 'Cargo no especificado'}</div>
@@ -214,7 +214,16 @@ const generateCVHTML = (data: any, templateId: string): string => {
               </div>
             </div>
           ` : ''}
-          
+          ${data.habilidadesBlandas?.length ? `
+            <div class="section">
+              <h2 class="section-title"> Habilidades Blandas</h2>
+              <div>
+                ${data.habilidadesBlandas.map((skill: any) => `
+                  <span class="skill-tag">${skill.nombre || ''} ${skill.nivelDominio ? `(${skill.nivelDominio})` : ''}</span>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
           ${data.proyectos?.length ? `
             <div class="section">
               <h2 class="section-title"> Proyectos</h2>
@@ -225,7 +234,10 @@ const generateCVHTML = (data: any, templateId: string): string => {
                   </div>
                   <div>${proj.descripcion || ''}</div>
                   <div>Tecnologías: ${proj.tecnologias?.join(', ') || 'No especificadas'}</div>
-                  ${proj.enlaceGithub ? `<div>🔗 <a href="${proj.enlaceGithub}">GitHub</a></div>` : ''}
+                  ${proj.fechaInicio || proj.fechaFinalizacion ? `
+                  <div>${proj.fechaInicio ? new Date(proj.fechaInicio).getFullYear() : ''} - ${proj.fechaFinalizacion ? new Date(proj.fechaFinalizacion).getFullYear() : ''}</div>
+                  ` : ''}
+                  ${proj.estadoProyecto ? `<div>Estado del proyecto: ${proj.estadoProyecto}</div>` : ''}
                   ${proj.enlaceDemo ? `
                     <div> <a href="${proj.enlaceDemo}">Demo</a></div> ` : ''}
                   ${proj.urlPdf ? `
@@ -299,13 +311,14 @@ export const GenerateCVSection = ({ onBack, onSuccess }: GenerateCVSectionProps)
 
       // 4. Convertir a canvas
       const canvas = await html2canvas(container, {
-        scale: 2,
+        scale: 1.2, //bajamos de 2 a 1.2 reducir calidad
         useCORS: true,
         backgroundColor: '#ffffff'
       });
 
-      // 5. Crear PDF
-      const imgData = canvas.toDataURL('image/png');
+      // 5. Crear PDF: comprimiendo el JPEG en lugar de usar PNG
+      // Cambiamos 'image/png' por 'image/jpeg' y añadimos compresión del 70% (0.7)
+      const imgData = canvas.toDataURL('image/jpeg', 0.7);
       const pdf = new jsPDF({
         unit: 'mm',
         format: 'a4',
@@ -318,13 +331,13 @@ export const GenerateCVSection = ({ onBack, onSuccess }: GenerateCVSectionProps)
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
 

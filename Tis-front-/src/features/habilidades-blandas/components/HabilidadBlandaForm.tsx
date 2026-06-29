@@ -2,7 +2,7 @@ import { uploadToCloudinary } from "@/core/api/cloudinary-upload";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { RichTextEditor } from "@/shared/components/ui/RichTextEditor";
-import { ToastMessage } from "@/shared/components/ui/ToastMessage";
+import { useToast } from "@shared/hooks/useToast";
 import type {
   HabilidadBlanda,
   HabilidadBlandaPayload,
@@ -47,22 +47,14 @@ export const HabilidadBlandaForm = ({ selected, onSave, onCancel }: Props) => {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [archivo, setArchivo] = useState<File | null>(null);
+  const { showToast } = useToast();
+  const [errors, setErrors] = useState<{
+  nombre?: string;
+  idCategoria?: string;
+  descripcion?: string;
+  evidenciaUrl?: string;
+}>({});
   const [uploading, setUploading] = useState(false);
-const [formToast, setFormToast] = useState<{
-  message: string;
-  type: "success" | "error" | "info";
-} | null>(null);
-
-const showFormToast = (
-  message: string,
-  type: "success" | "error" | "info" = "info"
-) => {
-  setFormToast({ message, type });
-
-  setTimeout(() => {
-    setFormToast(null);
-  }, 3000);
-};
 
   useEffect(() => {
     setArchivo(null);
@@ -96,17 +88,27 @@ const showFormToast = (
     }));
   };
 
+const validate = () => {
+  const newErrors: typeof errors = {};
+
+  if (!form.nombre.trim()) {
+    newErrors.nombre = "El nombre es obligatorio";
+  }
+
+  if (!form.idCategoria) {
+    newErrors.idCategoria = "Debe seleccionar una categoría";
+  }
+
+  if (!form.descripcion.trim()) {
+    newErrors.descripcion = "La descripción es obligatoria";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
   const handleSubmit = async () => {
-    if (!form.nombre.trim()) {
-      showFormToast("El nombre de la habilidad blanda es obligatorio", "error");
-      return;
-    }
-
-    if (!form.idCategoria) {
-      showFormToast("Debe seleccionar una categoría", "error");
-      return;
-    }
-
+ if (!validate()) return;
     try {
       setSaving(true);
 
@@ -130,18 +132,21 @@ const showFormToast = (
 
       console.log("DATA HABILIDAD BLANDA ENVIADA:", data);
 
-      await onSave(data);
+   await onSave(data);
 
-      setArchivo(null);
-      setForm(emptyForm);
+showToast(
+  form.id
+    ? "Habilidad blanda actualizada correctamente"
+    : "Habilidad blanda guardada",
+  "success"
+);
+
+setArchivo(null);
+setForm(emptyForm);
+
     } catch (error) {
       console.error(error);
-      showFormToast(
-  error instanceof Error
-    ? error.message
-    : "Error al guardar la habilidad blanda",
-  "error"
-);
+
     } finally {
       setSaving(false);
       setUploading(false);
@@ -170,7 +175,9 @@ const showFormToast = (
         placeholder="Ej: Liderazgo, Comunicación, Trabajo en equipo"
         className="w-full p-2 mb-3 bg-slate-800 rounded text-white outline-none border border-slate-700"
       />
-
+{errors.nombre && (
+  <p className="text-red-400 text-xs mt-1">{errors.nombre}</p>
+)}
       <label className="block text-sm mb-1 text-gray-300">
         Categoría / contexto
       </label>
@@ -190,7 +197,9 @@ const showFormToast = (
             </option>
           ))}
       </select>
-
+{errors.idCategoria && (
+  <p className="text-red-400 text-xs mt-1">{errors.idCategoria}</p>
+)}
      <label className="block text-sm mb-1 text-gray-300">
   Descripción
 </label>
@@ -205,6 +214,10 @@ const showFormToast = (
   }
   placeholder="Describe cómo demuestras esta habilidad"
 />
+{errors.descripcion && (
+  <p className="text-red-400 text-xs mt-1">{errors.descripcion}</p>
+)}
+
       <label className="block text-sm mb-1 text-gray-300">
         Subir archivos
       </label>
@@ -272,13 +285,6 @@ const showFormToast = (
           Cancelar edición
         </button>
       )}
-{formToast && (
-  <ToastMessage
-    message={formToast.message}
-    type={formToast.type}
-    onClose={() => setFormToast(null)}
-  />
-)}
 
     </div>
   );

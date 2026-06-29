@@ -6,7 +6,7 @@ import type {
   UpdateProjectDTO,
 } from "./project.dto";
 
-const API_URL = import.meta.env.VITE_API_URL || " https://teamsysback.apps.cs.umss.edu.bo";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function getToken() {
   return (
@@ -92,7 +92,7 @@ function mapProjectToUpdateDTO(
 
 export const projectService = {
   getTechnologies: async (): Promise<Technology[]> => {
-    const response = await fetch(`${API_URL}/api/tecnologias`, {
+    const response = await fetch(`${API_URL}/tecnologias`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -125,7 +125,7 @@ export const projectService = {
   },
 
   createProject: async (data: CreateProjectDTO) => {
-    const response = await fetch(`${API_URL}/api/proyectos/registrar`, {
+    const response = await fetch(`${API_URL}/proyectos/registrar`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -141,7 +141,7 @@ export const projectService = {
   },
 
   updateProject: async (idProyecto: number, data: UpdateProjectDTO) => {
-    const response = await fetch(`${API_URL}/api/proyectos/${idProyecto}`, {
+    const response = await fetch(`${API_URL}/proyectos/${idProyecto}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -157,7 +157,7 @@ export const projectService = {
   },
 
   deleteProject: async (idProyecto: number) => {
-    const response = await fetch(`${API_URL}/api/proyectos/${idProyecto}`, {
+    const response = await fetch(`${API_URL}/proyectos/${idProyecto}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });
@@ -181,7 +181,7 @@ export const projectService = {
   },
 
   getProjects: async (): Promise<ProjectResponseDTO[]> => {
-    const response = await fetch(`${API_URL}/api/proyectos`, {
+    const response = await fetch(`${API_URL}/proyectos`, {
       method: "GET",
       headers: getAuthHeaders(),
     });

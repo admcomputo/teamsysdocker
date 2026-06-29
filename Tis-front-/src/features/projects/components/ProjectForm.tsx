@@ -51,6 +51,7 @@ export function ProjectForm({
     addPdfs,
     removePdf,
     saveProject,
+    errors,
   } = useProjects({
     projectToEdit,
     onSaved,
@@ -89,6 +90,9 @@ export function ProjectForm({
               placeholder="Sistema de Gestión de Inventario"
               disabled={loading}
             />
+{errors.nombreProyecto && (
+  <p className="text-red-400 text-xs mt-1">{errors.nombreProyecto}</p>
+)}
           </div>
 
           <div className="project-field">
@@ -122,7 +126,9 @@ export function ProjectForm({
   }
   placeholder="Describe tu proyecto..."
 />
-
+{errors.descripcionProyecto && (
+  <p className="text-red-400 text-xs mt-1">{errors.descripcionProyecto}</p>
+)}
           <small>{form.descripcionProyecto.length}/1000</small>
         </div>
 
@@ -158,6 +164,10 @@ export function ProjectForm({
               </option>
             ))}
           </select>
+
+{errors.tecnologias && (
+  <p className="text-red-400 text-xs mt-1">{errors.tecnologias}</p>
+)}
 
           <div className="project-chips" style={{ marginTop: "12px" }}>
             {form.tecnologiasIds.map((techId, index) => (
@@ -238,6 +248,9 @@ export function ProjectForm({
               placeholder="https://github.com/usuario/proyecto"
               disabled={loading}
             />
+            {errors.urlRepositorio && (
+  <p className="text-red-400 text-xs mt-1">{errors.urlRepositorio}</p>
+)}
           </div>
 
           <div className="project-field">
@@ -248,6 +261,10 @@ export function ProjectForm({
               placeholder="https://inventario-app.vercel.app"
               disabled={loading}
             />
+
+  {errors.urlDemo && (
+  <p className="text-red-400 text-xs mt-1">{errors.urlDemo}</p>
+)}
           </div>
         </div>
 
@@ -262,7 +279,9 @@ export function ProjectForm({
                 placeholder="https://documentacion-inventario.com/api"
                 disabled={loading}
               />
-
+{errors.urlsAdicionales && (
+  <p className="text-red-400 text-xs mt-1">{errors.urlsAdicionales}</p>
+)}
               <button
                 type="button"
                 onClick={() => removeAdditionalUrl(index)}
@@ -311,6 +330,7 @@ export function ProjectForm({
                 }}
                 disabled={loading}
               />
+
             </label>
 
             {form.imagenes.map((img, index) => (
@@ -411,6 +431,10 @@ export function ProjectForm({
               onChange={(e) => updateField("fechaInicio", e.target.value)}
               disabled={loading}
             />
+{errors.fechaInicio && (
+  <p className="text-red-400 text-xs mt-1">{errors.fechaInicio}</p>
+)}
+
           </div>
 
           <div className="project-field">
@@ -423,6 +447,10 @@ export function ProjectForm({
               onChange={(e) => updateField("fechaFinalizacion", e.target.value)}
               disabled={loading || !isFinalizado}
             />
+
+{errors.fechaFinalizacion&& (
+  <p className="text-red-400 text-xs mt-1">{errors.fechaFinalizacion}</p>
+)}
             {!isFinalizado && (
               <small>
                 Solo se puede poner fecha fin si el proyecto está finalizado.

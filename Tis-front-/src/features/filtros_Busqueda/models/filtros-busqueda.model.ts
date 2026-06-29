@@ -6,13 +6,19 @@ export type OrdenarPor =
 
 export type Disponibilidad = "Disponible" | "No disponible" | "";
 
-export type ModalidadTrabajo = "Remoto" | "Presencial" | "Híbrida" | "Freelance" | "";
+export type ModalidadTrabajo =
+  | "Remoto"
+  | "Presencial"
+  | "Híbrida"
+  | "Freelance"
+  | "";
 
 export interface FiltrosBusqueda {
   buscar: string;
   profesion: string;
   especializacion: string;
   tecnologia: string;
+  empresa: string;
   formacionAcademica: string;
   disponibilidad: Disponibilidad;
   modalidadTrabajo: ModalidadTrabajo;
@@ -36,6 +42,7 @@ export interface PortafolioResultado {
   idiomas: string[];
   experienciaAnios: number;
   cantidadProyectos: number;
+  empresas?: string[];
   fotoPerfilUrl?: string;
   urlPublica: string;
   resumen?: string;
@@ -54,6 +61,7 @@ export const filtrosBusquedaIniciales: FiltrosBusqueda = {
   profesion: "",
   especializacion: "",
   tecnologia: "",
+  empresa: "",
   formacionAcademica: "",
   disponibilidad: "",
   modalidadTrabajo: "",
@@ -109,6 +117,10 @@ export const validarTecnologia = (valor: string): string => {
 
 export const validarUbicacion = (valor: string): string => {
   return valor.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s,.-]/g, "");
+};
+
+export const validarEmpresa = (valor: string): string => {
+  return valor.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s.,&/-]/g, "");
 };
 
 export const validarExperienciaMinima = (valor: string): number | "" => {

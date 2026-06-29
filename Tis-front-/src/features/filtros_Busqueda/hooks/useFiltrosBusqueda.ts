@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   filtrosBusquedaIniciales,
+  validarEmpresa,
   validarExperienciaMinima,
   validarSoloLetras,
   validarTecnologia,
@@ -20,6 +21,7 @@ import { useAuth } from "@/core/context/AuthContext";
 
 export const useFiltrosBusqueda = () => {
   const { user: currentUser } = useAuth();
+
   const [filtros, setFiltros] = useState<FiltrosBusqueda>(
     filtrosBusquedaIniciales,
   );
@@ -37,17 +39,20 @@ export const useFiltrosBusqueda = () => {
 
       const response = await buscarPortafoliosService(filtrosActuales);
 
-      // Exclude current logged in user from search results
       const filteredData = response.data.filter(
-        (item) => String(item.id) !== String(currentUser?.id)
+        (item) => String(item.id) !== String(currentUser?.id),
       );
 
       setResultados(filteredData);
-      
+
       const containsCurrentUser = response.data.some(
-        (item) => String(item.id) === String(currentUser?.id)
+        (item) => String(item.id) === String(currentUser?.id),
       );
-      setTotal(containsCurrentUser ? Math.max(0, response.total - 1) : response.total);
+
+      setTotal(
+        containsCurrentUser ? Math.max(0, response.total - 1) : response.total,
+      );
+
       setTotalPaginas(response.totalPaginas || 1);
     } catch (err) {
       setError(
@@ -87,6 +92,10 @@ export const useFiltrosBusqueda = () => {
           valorValidado = validarTecnologia(valor);
         }
 
+        if (campo === "empresa") {
+          valorValidado = validarEmpresa(valor);
+        }
+
         if (campo === "ubicacion") {
           valorValidado = validarUbicacion(valor);
         }
@@ -105,15 +114,15 @@ export const useFiltrosBusqueda = () => {
   };
 
   const cambiarOrden = (ordenarPor: OrdenarPor) => {
-  const nuevosFiltros = {
-    ...filtros,
-    ordenarPor,
-    pagina: 1,
-  };
+    const nuevosFiltros = {
+      ...filtros,
+      ordenarPor,
+      pagina: 1,
+    };
 
-  setFiltros(nuevosFiltros);
-  buscarPortafolios(nuevosFiltros);
-};
+    setFiltros(nuevosFiltros);
+    buscarPortafolios(nuevosFiltros);
+  };
 
   const cambiarPagina = (pagina: number) => {
     const nuevaPagina = Math.max(1, Math.min(pagina, totalPaginas));
@@ -152,12 +161,12 @@ export const useFiltrosBusqueda = () => {
   };
 
   const limpiarFiltros = () => {
-  setFiltros(filtrosBusquedaIniciales);
-  setResultados([]);
-  setTotal(0);
-  setTotalPaginas(1);
-  setError(null);
-};
+    setFiltros(filtrosBusquedaIniciales);
+    setResultados([]);
+    setTotal(0);
+    setTotalPaginas(1);
+    setError(null);
+  };
 
   useEffect(() => {
     buscarPortafolios(filtrosBusquedaIniciales);

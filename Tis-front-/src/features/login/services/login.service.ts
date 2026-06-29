@@ -26,7 +26,7 @@ export const loginService = {
       password: pass
     };
 
-    const response = await fetch(' https://teamsysback.apps.cs.umss.edu.bo/api/usuarios/login', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const loginService = {
   async sendPasswordResetEmail(correo: string): Promise<SendPasswordResetEmailResponseDTO> {
     const payload: SendPasswordResetEmailRequestDTO = { correo };
     const response = await apiClient.post<SendPasswordResetEmailResponseDTO>(
-      '/api/password/email',
+      '/password/email',
       payload
     );
     return response;
@@ -74,7 +74,7 @@ export const loginService = {
       }
     };
     const response = await apiClient.post<ResetPasswordResponseDTO>(
-      '/api/password/reset-password',
+      '/password/reset-password',
       payload,
       config
     );

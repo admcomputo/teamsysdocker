@@ -62,10 +62,8 @@ export const HabilidadesBlandasPage = () => {
     try {
       if (data.id) {
         await actualizarHabilidadBlanda(data);
-        showToast("Habilidad blanda actualizada correctamente", "success");
       } else {
         await crearHabilidadBlanda(data);
-        showToast("Habilidad blanda registrada correctamente", "success");
       }
 
       setSelected(null);

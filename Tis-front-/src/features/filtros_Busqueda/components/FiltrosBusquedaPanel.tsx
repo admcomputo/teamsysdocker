@@ -1,7 +1,4 @@
-import {
-  opcionesDisponibilidad,
-  
-} from "../models/filtros-busqueda.model";
+import { opcionesDisponibilidad } from "../models/filtros-busqueda.model";
 
 import type { FiltrosBusqueda } from "../models/filtros-busqueda.model";
 
@@ -111,6 +108,31 @@ export const FiltrosBusquedaPanel = ({
           </p>
         </div>
 
+
+<div>
+  <label className="mb-1 block text-sm font-medium text-text-primary">
+    Empresa / experiencia laboral
+  </label>
+  <input
+    type="text"
+    value={filtros.empresa}
+    maxLength={80}
+    placeholder="Ej: COMTECO, Tigo, ENTEL"
+    onChange={(event) =>
+      onActualizarFiltro("empresa", event.target.value)
+    }
+    className="w-full rounded-xl border border-card-border bg-[#061327] px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-brand-azul-brillante focus:ring-2 focus:ring-brand-azul-brillante/20"
+  />
+  <p className="mt-1 text-xs text-gray-400">
+    Busca por empresas donde trabajó o tiene experiencia.
+  </p>
+</div>
+
+
+
+
+
+
         <div>
           <label className="mb-1 block text-sm font-medium text-text-primary">
             Ubicación
@@ -149,63 +171,7 @@ export const FiltrosBusquedaPanel = ({
           </select>
         </div>
 
-        
-
- {/*     
-<div className="lg:col-span-3">
-  <label className="mb-2 block text-sm font-medium text-text-primary">
-    Idioma(s)
-  </label>
-
-  <div className="flex flex-col gap-3 sm:flex-row">
-    <select
-      defaultValue=""
-      onChange={(event) => {
-        const valor = event.target.value;
-
-        if (valor && !filtros.idiomas.includes(valor)) {
-          onActualizarFiltro("idiomas", [...filtros.idiomas, valor]);
-        }
-
-        event.target.value = "";
-      }}
-      className="w-full rounded-xl border border-card-border bg-[#061327] px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-azul-brillante"
-    >
-      <option value="">+ Seleccionar idioma</option>
-      {opcionesIdiomas.map((idioma) => (
-        <option key={idioma} value={idioma}>
-          {idioma}
-        </option>
-      ))}
-    </select>
-  </div>
-
-  {filtros.idiomas.length > 0 && (
-    <div className="mt-3 flex flex-wrap gap-2">
-      {filtros.idiomas.map((idioma) => (
-        <span
-          key={idioma}
-          className="flex items-center gap-2 rounded-full bg-brand-azul-brillante px-3 py-1 text-xs font-semibold text-white"
-        >
-          {idioma}
-          <button
-            type="button"
-            onClick={() =>
-              onActualizarFiltro(
-                "idiomas",
-                filtros.idiomas.filter((item) => item !== idioma),
-              )
-            }
-            className="font-bold"
-          >
-            ×
-   /*       </button>
-        </span>
-      ))}
-    </div>
-  )}
-</div>
-*/}
+ 
 
       </div>
 

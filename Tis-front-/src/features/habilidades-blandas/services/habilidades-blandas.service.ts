@@ -1,6 +1,6 @@
 import { apiClient } from "@/core/api/api-client";
 
-const ENDPOINT = "/api/habilidades-blandas";
+const ENDPOINT = "/habilidades-blandas";
 
 export interface Categoria {
   id: number;

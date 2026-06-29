@@ -53,7 +53,12 @@ export const HabilidadForm = ({ selected, onSave, onCancel }: Props) => {
   const [saving, setSaving] = useState(false);
   const [archivo, setArchivo] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-
+const [errors, setErrors] = useState<{
+  nombre?: string;
+  idCategoria?: string;
+  descripcion?: string;
+  evidenciaUrl?: string;
+}>({});
   const [formToast, setFormToast] = useState<{
   message: string;
   type: "success" | "error" | "info";
@@ -102,15 +107,27 @@ const showFormToast = (
           : value,
     }));
   };
+const validate = () => {
+  const newErrors: typeof errors = {};
 
+  if (!form.nombre.trim()) {
+    newErrors.nombre = "El nombre es obligatorio";
+  }
+
+  if (!form.idCategoria) {
+    newErrors.idCategoria = "Debe seleccionar una categoría";
+  }
+
+  if (!form.descripcion.trim()) {
+    newErrors.descripcion = "La descripción es obligatoria";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
   const handleSubmit = async () => {
-    if (!form.nombre.trim()) {
-      showFormToast("El nombre de la habilidad es obligatorio", "error");
-    }
-
-    if (!form.idCategoria) {
-     showFormToast("Debe seleccionar una categoría", "error");
-    }
+ if (!validate()) return;
 
     try {
       setSaving(true);
@@ -177,7 +194,9 @@ const showFormToast = (
         placeholder="Ej: React, Java, Spring Boot"
         className="w-full p-2 mb-3 bg-slate-800 rounded text-white outline-none border border-slate-700"
       />
-
+{errors.nombre && (
+  <p className="text-red-400 text-xs mt-1">{errors.nombre}</p>
+)}
       <label className="block text-sm mb-1 text-gray-300">Categoría</label>
       <select
         name="idCategoria"
@@ -195,7 +214,9 @@ const showFormToast = (
             </option>
           ))}
       </select>
-
+{errors.idCategoria && (
+  <p className="text-red-400 text-xs mt-1">{errors.idCategoria}</p>
+)}
       <label className="block text-sm mb-1 text-gray-300">
         Nivel de dominio
       </label>
