@@ -30,25 +30,25 @@ export interface HabilidadTecnicaPayload {
 }
 
 export const getMisHabilidades = () => {
-  return apiClient.get<HabilidadTecnica[]>(`${ENDPOINT}/api/mis-habilidades`);
+  return apiClient.get<HabilidadTecnica[]>(`${ENDPOINT}/mis-habilidades`);
 };
 
 export const crearHabilidad = (data: HabilidadTecnicaPayload) => {
   return apiClient.post<{ message: string; id: number }>(
-    `${ENDPOINT}/api/registrar`,
+    `${ENDPOINT}/registrar`,
     data
   );
 };
 
 export const actualizarHabilidad = (data: HabilidadTecnicaPayload) => {
   return apiClient.put<{ message: string }>(
-    `${ENDPOINT}/api/actualizar`,
+    `${ENDPOINT}/actualizar`,
     data
   );
 };
 
 export const eliminarHabilidad = (id: number) => {
   return apiClient.delete<{ message: string }>(
-    `${ENDPOINT}/api/eliminar/${id}`
+    `${ENDPOINT}/eliminar/${id}`
   );
 };
