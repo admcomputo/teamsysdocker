@@ -7,7 +7,7 @@ RUN npm install
 
 COPY . .
 
-ARG VITE_API_URL=https://teamsysback.apps.cs.umss.edu.bo/api/api
+ARG VITE_API_URL=https://teamsysback.apps.cs.umss.edu.bo
 ARG VITE_CLOUDINARY_CLOUD_NAME=drcjlwd3h
 ARG VITE_CLOUDINARY_UPLOAD_PRESET=mhflu6et
 ARG VITE_CLOUDINARY_UPLOAD_FOLDER=cvs
