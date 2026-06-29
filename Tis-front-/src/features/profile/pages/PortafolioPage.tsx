@@ -97,6 +97,7 @@ interface PortafolioCompleto {
   telefono: string | null;
   direccion: string | null;
   enlacePublico: string | null;
+  urlCv: string | null;
   experienciasLaborales: ExperienciaLaboralResumenDTO[];
   formacionesAcademica: FormacionAcademicaResumenDTO[];
   habilidadesTecnicas: HabilidadTecnicaResumenDTO[];
@@ -142,9 +143,9 @@ export const PortafolioPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"general" | "experience" | "projects" | "education">("general");
-const [totalLikes, setTotalLikes] = useState(0);
-const [liked, setLiked] = useState(false);
-const [processingLike, setProcessingLike] = useState(false);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [processingLike, setProcessingLike] = useState(false);
   const [slugPrivado, setSlugPrivado] = useState<string | null>(null);
   const [visibilidad, setVisibilidad] = useState<VisibilidadAjustes | null>(null);
 
@@ -160,35 +161,37 @@ const [processingLike, setProcessingLike] = useState(false);
 
         if (isPublicMode) {
           // --- MODO PÚBLICO ---
-const token =
-  sessionStorage.getItem("jwt") ||
-  sessionStorage.getItem("token") ||
-  localStorage.getItem("jwt") ||
-  localStorage.getItem("token");
+          const token =
+            sessionStorage.getItem("jwt") ||
+            sessionStorage.getItem("token") ||
+            localStorage.getItem("jwt") ||
+            localStorage.getItem("token");
 
-const [
-  profileRes,
-  expRes,
-  projRes,
-  techRes,
-  softRes,
-  eduRes,
-  likesRes,
-  likedRes,
-] = await Promise.all([
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/experiencias/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/proyectos/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/habilidades-tecnicas/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/habilidades-blandas/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/formaciones/${textoUrl}`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}/likes/total`),
-  fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}/liked`, {
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  }),
-]);
+          const [
+            profileRes,
+            expRes,
+            projRes,
+            techRes,
+            softRes,
+            eduRes,
+            cvRes,
+            likesRes,
+            likedRes,
+          ] = await Promise.all([
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/experiencias/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/proyectos/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/habilidades-tecnicas/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/habilidades-blandas/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/formaciones/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/curriculum/${textoUrl}`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}/likes/total`),
+            fetch(`${import.meta.env.VITE_API_URL}/api/enlace/profile/${textoUrl}/liked`, {
+              headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+            }),
+          ]);
 
           if (!profileRes.ok) throw new Error("No se pudo cargar el perfil público.");
           const profileData = await profileRes.json();
@@ -196,11 +199,13 @@ const [
             const likesData = await likesRes.json();
             setTotalLikes(likesData.totalLikes);
           }
-          
+
           if (likedRes.ok) {
-  const likedData = await likedRes.json();
-  setLiked(likedData.liked);
-}
+            const likedData = await likedRes.json();
+            setLiked(likedData.liked);
+          }
+
+          const cvData = cvRes.ok ? await cvRes.json() : { urlCv: null };
 
           const portafolioMapeado: PortafolioCompleto = {
             nombre: profileData.nombre,
@@ -211,6 +216,7 @@ const [
             telefono: profileData.telefono,
             direccion: profileData.direccion,
             enlacePublico: null,
+            urlCv: cvData.urlCv || null,
             experienciasLaborales: expRes.ok ? await expRes.json() : [],
             formacionesAcademica: eduRes.ok ? await eduRes.json() : [],
             habilidadesTecnicas: techRes.ok ? await techRes.json() : [],
@@ -241,7 +247,7 @@ const [
           const data = await response.json();
           setPortafolio(data);
           // En modo privado (dueño del perfil), todos los datos son visibles
-setVisibilidad(null);
+          setVisibilidad(null);
 
           // 🔥 CLAVE: extraer el slug real del enlace público (evita problemas de encoding)
           let slug = null;
@@ -252,75 +258,75 @@ setVisibilidad(null);
             slug = correoToSlug(data.correo);
           }
           setSlugPrivado(slug);
-           console.log("🔗 Slug generado:", slug);
+          console.log("🔗 Slug generado:", slug);
 
           // Cargar total de likes usando el slug
-if (slug) {
-  try {
+          if (slug) {
+            try {
 
-    const likesTotalRes = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/enlace/profile/${slug}/likes/total`
-    );
+              const likesTotalRes = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/enlace/profile/${slug}/likes/total`
+              );
 
-    const likedRes = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/enlace/profile/${slug}/liked`,
-      {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      }
-    );
-     console.log("cargando visibilidad ");
-    const visibilidadRes = await fetch(`${import.meta.env.VITE_API_URL}/api/visibilidad/mis-ajustes`, {
-  headers: {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  },
-});
-console.log("satatus visibilidad ", visibilidadRes.status);
-if (visibilidadRes.ok) {
-  const visibilidadData = await visibilidadRes.json();
-  console.log("visibilidad cargada: ", visibilidadData);
-  setVisibilidad(visibilidadData);
-}else {
-      const errorText = await visibilidadRes.text();
-      console.error("error cargar viviblilidad:", visibilidadRes.status, errorText)
-      console.warn("Error al cargar visibilidad:", visibilidadRes.status);
-      // Si falla, establecer valores por defecto (todos false por seguridad)
-      setVisibilidad({
-        correoUsr: false,
-        telefonoUsr: false,
-        direccionUsr: false,
-        nombreUsr: false,
-        biografiaUsr: false,
-        profesionUsr: false,
-        universidadUsr: false,
-      });
-    }
+              const likedRes = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/enlace/profile/${slug}/liked`,
+                {
+                  headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                  },
+                }
+              );
+              console.log("cargando visibilidad ");
+              const visibilidadRes = await fetch(`${import.meta.env.VITE_API_URL}/api/visibilidad/mis-ajustes`, {
+                headers: {
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+              });
+              console.log("satatus visibilidad ", visibilidadRes.status);
+              if (visibilidadRes.ok) {
+                const visibilidadData = await visibilidadRes.json();
+                console.log("visibilidad cargada: ", visibilidadData);
+                setVisibilidad(visibilidadData);
+              } else {
+                const errorText = await visibilidadRes.text();
+                console.error("error cargar viviblilidad:", visibilidadRes.status, errorText)
+                console.warn("Error al cargar visibilidad:", visibilidadRes.status);
+                // Si falla, establecer valores por defecto (todos false por seguridad)
+                setVisibilidad({
+                  correoUsr: false,
+                  telefonoUsr: false,
+                  direccionUsr: false,
+                  nombreUsr: false,
+                  biografiaUsr: false,
+                  profesionUsr: false,
+                  universidadUsr: false,
+                });
+              }
 
-    if (likesTotalRes.ok) {
-      const { totalLikes } = await likesTotalRes.json();
-      setTotalLikes(totalLikes);
-    }
+              if (likesTotalRes.ok) {
+                const { totalLikes } = await likesTotalRes.json();
+                setTotalLikes(totalLikes);
+              }
 
-    if (likedRes.ok) {
-      const likedData = await likedRes.json();
-      setLiked(likedData.liked);
-    }
+              if (likedRes.ok) {
+                const likedData = await likedRes.json();
+                setLiked(likedData.liked);
+              }
 
-  } catch (err) {
-    console.error("Error al cargar likes", err);
-    console.error("Error al cargar visibilidad:", err);
-    setVisibilidad({
-      correoUsr: false,
-      telefonoUsr: false,
-      direccionUsr: false,
-      nombreUsr: false,
-      biografiaUsr: false,
-      profesionUsr: false,
-      universidadUsr: false,
-    });
-  }
-}
+            } catch (err) {
+              console.error("Error al cargar likes", err);
+              console.error("Error al cargar visibilidad:", err);
+              setVisibilidad({
+                correoUsr: false,
+                telefonoUsr: false,
+                direccionUsr: false,
+                nombreUsr: false,
+                biografiaUsr: false,
+                profesionUsr: false,
+                universidadUsr: false,
+              });
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -359,9 +365,9 @@ if (visibilidadRes.ok) {
       const url = `${import.meta.env.VITE_API_URL}/api/enlace/profile/${likeIdentifier}/like`;
       const token = !isPublicMode
         ? sessionStorage.getItem("jwt") ||
-          sessionStorage.getItem("token") ||
-          localStorage.getItem("jwt") ||
-          localStorage.getItem("token")
+        sessionStorage.getItem("token") ||
+        localStorage.getItem("jwt") ||
+        localStorage.getItem("token")
         : undefined;
 
       const response = await fetch(url, {
@@ -372,33 +378,33 @@ if (visibilidadRes.ok) {
         },
       });
 
-if (!response.ok) {
-  const errorText = await response.text();
-  throw new Error(errorText || "Error al procesar like");
-}
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Error al procesar like");
+      }
 
-const data = await response.json();
+      const data = await response.json();
 
-if (data.message.includes("registrado")) {
+      if (data.message.includes("registrado")) {
 
-  setLiked(true);
+        setLiked(true);
 
-  setTotalLikes((prev) => prev + 1);
+        setTotalLikes((prev) => prev + 1);
 
-  if (!isPublicMode) {
-    alert("¡Like registrado!");
-  }
+        if (!isPublicMode) {
+          alert("¡Like registrado!");
+        }
 
-} else {
+      } else {
 
-  setLiked(false);
+        setLiked(false);
 
-  setTotalLikes((prev) => Math.max(0, prev - 1));
+        setTotalLikes((prev) => Math.max(0, prev - 1));
 
-  if (!isPublicMode) {
-    alert("Like eliminado");
-  }
-}
+        if (!isPublicMode) {
+          alert("Like eliminado");
+        }
+      }
 
 
     } catch (error) {
@@ -479,10 +485,10 @@ if (data.message.includes("registrado")) {
               >
                 <Heart className="w-4 h-4 fill-white" />
                 {processingLike
-  ? "Procesando..."
-  : liked
-    ? "Ya no me gusta"
-    : "Me gusta"}
+                  ? "Procesando..."
+                  : liked
+                    ? "Ya no me gusta"
+                    : "Me gusta"}
               </button>
               <span className="mt-2 text-sm text-text-secondary">{totalLikes} likes</span>
             </div>
@@ -532,6 +538,17 @@ if (data.message.includes("registrado")) {
                 Escribir por WhatsApp
               </a>
             )}
+            {portafolio.urlCv && (
+              <a
+                href={portafolio.urlCv}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-[#0B1F3A] hover:bg-[#112F58] text-[#E2F0FF] border border-brand-azul-brillante/30 py-2.5 px-5 rounded-xl transition text-sm font-semibold shadow-md"
+              >
+                <FileText className="w-4 h-4" />
+                Ver CV
+              </a>
+            )}
           </div>
         </div>
       </section>
@@ -540,41 +557,37 @@ if (data.message.includes("registrado")) {
       <div className="flex border-b border-card-border/80 p-1 bg-card-bg/20 rounded-xl max-w-fit gap-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("general")}
-          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
-            activeTab === "general"
-              ? "bg-brand-azul-brillante text-white shadow-md"
-              : "text-text-secondary hover:text-text-primary"
-          }`}
+          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${activeTab === "general"
+            ? "bg-brand-azul-brillante text-white shadow-md"
+            : "text-text-secondary hover:text-text-primary"
+            }`}
         >
           Resumen General
         </button>
         <button
           onClick={() => setActiveTab("experience")}
-          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
-            activeTab === "experience"
-              ? "bg-brand-azul-brillante text-white shadow-md"
-              : "text-text-secondary hover:text-text-primary"
-          }`}
+          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${activeTab === "experience"
+            ? "bg-brand-azul-brillante text-white shadow-md"
+            : "text-text-secondary hover:text-text-primary"
+            }`}
         >
           Experiencia y Skills
         </button>
         <button
           onClick={() => setActiveTab("projects")}
-          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
-            activeTab === "projects"
-              ? "bg-brand-azul-brillante text-white shadow-md"
-              : "text-text-secondary hover:text-text-primary"
-          }`}
+          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${activeTab === "projects"
+            ? "bg-brand-azul-brillante text-white shadow-md"
+            : "text-text-secondary hover:text-text-primary"
+            }`}
         >
           Proyectos ({portafolio.proyectos.length})
         </button>
         <button
           onClick={() => setActiveTab("education")}
-          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
-            activeTab === "education"
-              ? "bg-brand-azul-brillante text-white shadow-md"
-              : "text-text-secondary hover:text-text-primary"
-          }`}
+          className={`px-4 sm:px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${activeTab === "education"
+            ? "bg-brand-azul-brillante text-white shadow-md"
+            : "text-text-secondary hover:text-text-primary"
+            }`}
         >
           Educación y Enlaces
         </button>
@@ -631,23 +644,23 @@ if (data.message.includes("registrado")) {
                 <h3 className="text-lg font-bold text-text-primary border-b border-card-border/50 pb-3 mb-4">Información Rápida</h3>
                 <div className="space-y-4 text-sm">
                   {visibilidad !== null && portafolio.correo && visibilidad.correoUsr === true && (
-  <div>
-    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Correo Electrónico</span>
-    <span className="text-text-primary font-medium">{portafolio.correo}</span>
-  </div>
-)}
-{visibilidad !== null && portafolio.telefono && visibilidad.telefonoUsr === true && (
-  <div>
-    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Teléfono / WhatsApp</span>
-    <span className="text-text-primary font-medium">{portafolio.telefono}</span>
-  </div>
-)}
-{visibilidad !== null && portafolio.direccion && visibilidad.direccionUsr === true &&(
-  <div>
-    <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Ubicación</span>
-    <span className="text-text-primary font-medium">{portafolio.direccion}</span>
-  </div>
-)}
+                    <div>
+                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Correo Electrónico</span>
+                      <span className="text-text-primary font-medium">{portafolio.correo}</span>
+                    </div>
+                  )}
+                  {visibilidad !== null && portafolio.telefono && visibilidad.telefonoUsr === true && (
+                    <div>
+                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Teléfono / WhatsApp</span>
+                      <span className="text-text-primary font-medium">{portafolio.telefono}</span>
+                    </div>
+                  )}
+                  {visibilidad !== null && portafolio.direccion && visibilidad.direccionUsr === true && (
+                    <div>
+                      <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Ubicación</span>
+                      <span className="text-text-primary font-medium">{portafolio.direccion}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="block text-xs text-text-secondary uppercase tracking-wider font-semibold">Modalidad Preferida</span>
                     <span className="text-brand-morado font-semibold">
@@ -791,158 +804,158 @@ if (data.message.includes("registrado")) {
             {portafolio.proyectos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[...portafolio.proyectos]
-  .sort((a, b) => Number(b.destacar) - Number(a.destacar))
-  .map((pro, index) => (
-                  <article
-                    key={index}
-                    className="bg-card-bg/50 backdrop-blur-sm border border-card-border rounded-2xl overflow-hidden hover:border-brand-azul-brillante/30 transition flex flex-col h-full shadow-lg"
-                  >
-                    <div className="h-48 overflow-hidden bg-[#0A1A2F] relative border-b border-card-border">
-                      {pro.urlsImagenes && pro.urlsImagenes.length > 0 ? (
-                        <img
-                          src={pro.urlsImagenes[0]}
-                          alt={pro.titulo}
-                          className="w-full h-full object-cover hover:scale-105 transition duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                          <BriefcaseBusiness size={56} className="text-brand-azul-brillante mb-3" />
-                          <span className="text-white font-semibold text-center line-clamp-2">{pro.titulo}</span>
-                        </div>
-                      )}
-                      <span className="absolute bottom-3 right-3 bg-brand-azul-brillante/95 text-white text-xs font-bold px-2.5 py-1 rounded-md">
-                        {pro.estadoProyecto || "Terminado"}
-                      </span>
-                    </div>
-
-                    <div className="p-6 flex flex-col flex-1 gap-4">
-                      <div>
-                        <h4 className="text-lg font-bold text-text-primary tracking-tight">
-                          {pro.titulo}</h4>
-                        <p className="text-xs text-brand-morado font-semibold uppercase tracking-wider mt-0.5">
-                          {pro.rolProyecto}</p>
-
- {pro.destacar && (
-  <div className="absolute top-3 left-3 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-extrabold shadow-lg">
-    ★ Destacado
-  </div>
-)}
-                        {pro.fechaInicio && (
-                          <p className="text-[11px] text-text-secondary mt-0.5 flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {pro.fechaInicio} — {pro.fechaFinalizacion || "Presente"}
-                          </p>
+                  .sort((a, b) => Number(b.destacar) - Number(a.destacar))
+                  .map((pro, index) => (
+                    <article
+                      key={index}
+                      className="bg-card-bg/50 backdrop-blur-sm border border-card-border rounded-2xl overflow-hidden hover:border-brand-azul-brillante/30 transition flex flex-col h-full shadow-lg"
+                    >
+                      <div className="h-48 overflow-hidden bg-[#0A1A2F] relative border-b border-card-border">
+                        {pro.urlsImagenes && pro.urlsImagenes.length > 0 ? (
+                          <img
+                            src={pro.urlsImagenes[0]}
+                            alt={pro.titulo}
+                            className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                            <BriefcaseBusiness size={56} className="text-brand-azul-brillante mb-3" />
+                            <span className="text-white font-semibold text-center line-clamp-2">{pro.titulo}</span>
+                          </div>
                         )}
+                        <span className="absolute bottom-3 right-3 bg-brand-azul-brillante/95 text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                          {pro.estadoProyecto || "Terminado"}
+                        </span>
                       </div>
 
-                      {pro.descripcion && (
-                        <div
-                          className="text-sm sm:text-base text-text-secondary [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1"
-                          dangerouslySetInnerHTML={{ __html: pro.descripcion }}
-                        />
-                      )}
+                      <div className="p-6 flex flex-col flex-1 gap-4">
+                        <div>
+                          <h4 className="text-lg font-bold text-text-primary tracking-tight">
+                            {pro.titulo}</h4>
+                          <p className="text-xs text-brand-morado font-semibold uppercase tracking-wider mt-0.5">
+                            {pro.rolProyecto}</p>
 
-                      {pro.tecnologias && pro.tecnologias.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
-                            <Code2 className="w-4 h-4" /> Tecnologías usadas
-                          </p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {pro.tecnologias.map((tech) => (
-                              <span
-                                key={tech}
-                                className="rounded-full bg-[#0B1F3A] border border-brand-azul-brillante/15 px-2.5 py-0.5 text-xs text-[#E2F0FF] font-medium"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
+                          {pro.destacar && (
+                            <div className="absolute top-3 left-3 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-extrabold shadow-lg">
+                              ★ Destacado
+                            </div>
+                          )}
+                          {pro.fechaInicio && (
+                            <p className="text-[11px] text-text-secondary mt-0.5 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {pro.fechaInicio} — {pro.fechaFinalizacion || "Presente"}
+                            </p>
+                          )}
                         </div>
-                      )}
 
-                      {pro.urlsImagenes && pro.urlsImagenes.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
-                            <ImageIcon className="w-4 h-4" /> Imágenes del proyecto
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {pro.urlsImagenes.map((imagenUrl, idx) => (
-                              <button
-                                key={`${imagenUrl}-${idx}`}
-                                type="button"
-                                onClick={() => window.open(imagenUrl, "_blank")}
-                                className="w-full rounded-xl bg-[#2b7ae7] border border-card-border px-3 py-2 text-sm text-text-primary hover:border-brand-azul-brillante hover:bg-[#122947] transition"
-                              >
-                                Imagen {idx + 1}
-                              </button>
-                            ))}
+                        {pro.descripcion && (
+                          <div
+                            className="text-sm sm:text-base text-text-secondary [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1"
+                            dangerouslySetInnerHTML={{ __html: pro.descripcion }}
+                          />
+                        )}
+
+                        {pro.tecnologias && pro.tecnologias.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
+                              <Code2 className="w-4 h-4" /> Tecnologías usadas
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {pro.tecnologias.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="rounded-full bg-[#0B1F3A] border border-brand-azul-brillante/15 px-2.5 py-0.5 text-xs text-[#E2F0FF] font-medium"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {pro.urlPdfs && pro.urlPdfs.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
-                            <FileText className="w-4 h-4" /> PDFs del proyecto
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {pro.urlPdfs.map((pdfUrl, idx) => (
+                        {pro.urlsImagenes && pro.urlsImagenes.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
+                              <ImageIcon className="w-4 h-4" /> Imágenes del proyecto
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {pro.urlsImagenes.map((imagenUrl, idx) => (
+                                <button
+                                  key={`${imagenUrl}-${idx}`}
+                                  type="button"
+                                  onClick={() => window.open(imagenUrl, "_blank")}
+                                  className="w-full rounded-xl bg-[#2b7ae7] border border-card-border px-3 py-2 text-sm text-text-primary hover:border-brand-azul-brillante hover:bg-[#122947] transition"
+                                >
+                                  Imagen {idx + 1}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {pro.urlPdfs && pro.urlPdfs.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-text-secondary text-sm font-semibold mb-3 flex items-center gap-1">
+                              <FileText className="w-4 h-4" /> PDFs del proyecto
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {pro.urlPdfs.map((pdfUrl, idx) => (
+                                <a
+                                  key={`${pdfUrl}-${idx}`}
+                                  href={pdfUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="w-full rounded-xl bg-[#2b7ae7] border border-card-border px-3 py-2 text-sm text-text-primary text-center hover:border-brand-azul-brillante hover:bg-[#122947] transition"
+                                >
+                                  📄 PDF {idx + 1}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="pt-3 border-t border-card-border/40 mt-auto">
+                          <p className="text-text-secondary text-sm font-semibold mb-3">Enlaces del proyecto</p>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {pro.enlaceGithub && (
                               <a
-                                key={`${pdfUrl}-${idx}`}
-                                href={pdfUrl}
+                                href={pro.enlaceGithub}
                                 target="_blank"
-                                rel="noreferrer"
-                                className="w-full rounded-xl bg-[#2b7ae7] border border-card-border px-3 py-2 text-sm text-text-primary text-center hover:border-brand-azul-brillante hover:bg-[#122947] transition"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-xs text-text-primary hover:text-brand-azul-brillante font-semibold transition"
                               >
-                                📄 PDF {idx + 1}
+                                <Github size={16} />
+                                GitHub
+                              </a>
+                            )}
+                            {pro.enlaceDemo && (
+                              <a
+                                href={pro.enlaceDemo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-xs text-text-primary hover:text-brand-azul-brillante font-semibold transition"
+                              >
+                                <ExternalLink size={16} />
+                                Demo En Vivo
+                              </a>
+                            )}
+                            {pro.urlsAdicionales?.map((url, idx) => (
+                              <a
+                                key={`${url}-${idx}`}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-[#0B1F3A] border border-brand-azul-brillante/15 hover:border-brand-azul-brillante text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
+                              >
+                                <ExternalLink size={16} />
+                                Link {idx + 1}
                               </a>
                             ))}
                           </div>
                         </div>
-                      )}
-
-                      <div className="pt-3 border-t border-card-border/40 mt-auto">
-                        <p className="text-text-secondary text-sm font-semibold mb-3">Enlaces del proyecto</p>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          {pro.enlaceGithub && (
-                            <a
-                              href={pro.enlaceGithub}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-xs text-text-primary hover:text-brand-azul-brillante font-semibold transition"
-                            >
-                              <Github size={16} />
-                              GitHub
-                            </a>
-                          )}
-                          {pro.enlaceDemo && (
-                            <a
-                              href={pro.enlaceDemo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-xs text-text-primary hover:text-brand-azul-brillante font-semibold transition"
-                            >
-                              <ExternalLink size={16} />
-                              Demo En Vivo
-                            </a>
-                          )}
-                          {pro.urlsAdicionales?.map((url, idx) => (
-                            <a
-                              key={`${url}-${idx}`}
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 bg-[#0B1F3A] border border-brand-azul-brillante/15 hover:border-brand-azul-brillante text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
-                            >
-                              <ExternalLink size={16} />
-                              Link {idx + 1}
-                            </a>
-                          ))}
-                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  ))}
               </div>
             ) : (
               <div className="rounded-2xl border border-card-border bg-card-bg/30 p-8 text-center">
