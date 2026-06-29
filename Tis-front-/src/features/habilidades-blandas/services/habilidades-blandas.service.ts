@@ -24,25 +24,25 @@ export interface HabilidadBlandaPayload {
 }
 
 export const getMisHabilidadesBlandas = () => {
-  return apiClient.get<HabilidadBlanda[]>(`${ENDPOINT}/mis-habilidades`);
+  return apiClient.get<HabilidadBlanda[]>(`${ENDPOINT}/api/mis-habilidades`);
 };
 
 export const crearHabilidadBlanda = (data: HabilidadBlandaPayload) => {
   return apiClient.post<{ message: string; id: number }>(
-    `${ENDPOINT}/registrar`,
+    `${ENDPOINT}/api/registrar`,
     data
   );
 };
 
 export const actualizarHabilidadBlanda = (data: HabilidadBlandaPayload) => {
   return apiClient.put<{ message: string }>(
-    `${ENDPOINT}/actualizar`,
+    `${ENDPOINT}/api/actualizar`,
     data
   );
 };
 
 export const eliminarHabilidadBlanda = (id: number) => {
   return apiClient.delete<{ message: string }>(
-    `${ENDPOINT}/eliminar/${id}`
+    `${ENDPOINT}/api/eliminar/${id}`
   );
 };
