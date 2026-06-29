@@ -1,6 +1,6 @@
 import type { AcademicTraining } from '../models/academicTraining.model';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 export const academicTrainingService = {
   uploadToCloudinary: async (file: File): Promise<string> => {
@@ -47,7 +47,7 @@ export const academicTrainingService = {
       esPublico: training.isPublic !== undefined ? training.isPublic : true
     };
 
-    const response = await fetch(`${API_URL}/formacion/registrar`, {
+    const response = await fetch(`${API_URL}/api/formacion/registrar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export const academicTrainingService = {
       throw new Error('No estás autenticado');
     }
 
-    const response = await fetch(`${API_URL}/formacion`, {
+    const response = await fetch(`${API_URL}/api/formacion`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ export const academicTrainingService = {
       esPublico: training.isPublic !== undefined ? training.isPublic : true
     };
 
-    const response = await fetch(`${API_URL}/formacion/${id}`, {
+    const response = await fetch(`${API_URL}/api/formacion/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export const academicTrainingService = {
       throw new Error('No estás autenticado');
     }
 
-    const response = await fetch(`${API_URL}/formacion/${id}`, {
+    const response = await fetch(`${API_URL}/api/formacion/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -4,7 +4,7 @@ import type {
   RedSocialRequestDTO,
 } from './professional-links.dto';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 const getToken = (): string => {
   const token = sessionStorage.getItem('jwt');
@@ -46,7 +46,7 @@ const handleJsonResponse = async <T>(response: Response): Promise<T> => {
 
 export const professionalLinksService = {
   async getProfessionalLinks(): Promise<GetRedesSocialesResponse> {
-    const response = await fetch(`${API_URL}/redes-sociales`, {
+    const response = await fetch(`${API_URL}/api/redes-sociales`, {
       method: 'GET',
       headers: buildHeaders(),
     });
@@ -57,7 +57,7 @@ export const professionalLinksService = {
   async createProfessionalLinks(
     payload: RedSocialRequestDTO[]
   ): Promise<SaveRedSocialResponse> {
-    const response = await fetch(`${API_URL}/redes-sociales/registrar`, {
+    const response = await fetch(`${API_URL}/api/redes-sociales/registrar`, {
       method: 'POST',
       headers: buildHeaders(),
       body: JSON.stringify(payload),
@@ -70,7 +70,7 @@ export const professionalLinksService = {
     idRed: number,
     payload: RedSocialRequestDTO
   ): Promise<SaveRedSocialResponse> {
-    const response = await fetch(`${API_URL}/redes-sociales/${idRed}`, {
+    const response = await fetch(`${API_URL}/api/redes-sociales/${idRed}`, {
       method: 'PUT',
       headers: buildHeaders(),
       body: JSON.stringify(payload),
@@ -82,7 +82,7 @@ export const professionalLinksService = {
   async deleteProfessionalLink(
     idRed: number
   ): Promise<SaveRedSocialResponse> {
-    const response = await fetch(`${API_URL}/redes-sociales/${idRed}`, {
+    const response = await fetch(`${API_URL}/api/redes-sociales/${idRed}`, {
       method: 'DELETE',
       headers: buildHeaders(false),
     });

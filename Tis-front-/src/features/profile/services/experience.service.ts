@@ -17,7 +17,7 @@ import {
   adaptTechnologies,
 } from './experience.adapter';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('jwt');
@@ -29,7 +29,7 @@ const getAuthHeaders = () => {
 };
 
 export const getTechnologies = async (): Promise<Technology[]> => {
-  const response = await fetch(`${API_URL}/tecnologias`, {
+  const response = await fetch(`${API_URL}/api/tecnologias`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
@@ -44,7 +44,7 @@ export const getTechnologies = async (): Promise<Technology[]> => {
 };
 
 export const getExperiences = async (): Promise<Experience[]> => {
-  const response = await fetch(`${API_URL}/experiencias/mis-experiencias`, {
+  const response = await fetch(`${API_URL}/api/experiencias/mis-experiencias`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
@@ -67,7 +67,7 @@ export const createExperience = async (
   const payload = adaptExperienceToCreateDto(formData);
 
   const response = await fetch(
-    `${API_URL}/experiencias/registrar`,
+    `${API_URL}/api/experiencias/registrar`,
     {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -100,7 +100,7 @@ export const updateExperience = async (
     ...adaptExperienceToCreateDto(formData),
   };
 
-  const response = await fetch(`${API_URL}/experiencias/actualizar/${id}`, {
+  const response = await fetch(`${API_URL}/api/experiencias/actualizar/${id}`, {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
@@ -121,7 +121,7 @@ return {
 };
 
 export const deleteExperience = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/experiencias/eliminar/${id}`, {
+  const response = await fetch(`${API_URL}/api/experiencias/eliminar/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,

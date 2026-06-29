@@ -5,7 +5,7 @@ import type {
 } from '../models/profile.model';
 import type { ProfilePhotoRequestDto, ProfileRequestDto } from './profile.dto';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 const getToken = (): string | null => {
   return (
@@ -43,7 +43,7 @@ export const profileService = {
   },
 
   getProfile: async (): Promise<PerfilBackendResponse> => {
-    const response = await fetch(`${API_URL}/usuarios/perfil`, {
+    const response = await fetch(`${API_URL}/api/usuarios/perfil`, {
       method: 'GET',
       headers: authHeaders(),
     });
@@ -56,7 +56,7 @@ export const profileService = {
   },
 
   getProfesiones: async (): Promise<Profesion[]> => {
-    const response = await fetch(`${API_URL}/profesiones`, {
+    const response = await fetch(`${API_URL}/api/profesiones`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const profileService = {
   },
 
   updateProfile: async (dto: ProfileRequestDto): Promise<ProfileResponse> => {
-    const response = await fetch(`${API_URL}/usuarios/perfil`, {
+    const response = await fetch(`${API_URL}/api/usuarios/perfil`, {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify(dto),
@@ -91,7 +91,7 @@ export const profileService = {
   updateProfilePhoto: async (
     dto: ProfilePhotoRequestDto
   ): Promise<{ success: boolean; message: string }> => {
-    const response = await fetch(`${API_URL}/usuarios/foto-perfil`, {
+    const response = await fetch(`${API_URL}/api/usuarios/foto-perfil`, {
       method: 'PATCH',
       headers: authHeaders(),
       body: JSON.stringify(dto),
