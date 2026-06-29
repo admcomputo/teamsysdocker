@@ -41,7 +41,7 @@ const getErrorMessage = async (
 export const likesService = {
   getTotalLikes: async (): Promise<number> => {
     const response = await fetch(
-      `${API_URL}/mis-likes/total`,
+      `${API_URL}/api/mis-likes/total`,
       {
         method: 'GET',
         headers: authHeaders(),
@@ -60,7 +60,7 @@ export const likesService = {
 
   getLikesHistory: async (): Promise<UsuarioLikeDTO[]> => {
     const response = await fetch(
-      `${API_URL}/mis-likes`,
+      `${API_URL}/api/mis-likes`,
       {
         method: 'GET',
         headers: authHeaders(),
@@ -78,7 +78,7 @@ export const likesService = {
     textoUrl: string
   ): Promise<LikeResponseDTO> => {
     const response = await fetch(
-      `${API_URL}/profile/${textoUrl}/like`,
+      `${API_URL}/api/profile/${textoUrl}/like`,
       {
         method: 'POST',
         headers: authHeaders(),
@@ -96,7 +96,7 @@ export const likesService = {
     textoUrl: string
   ): Promise<LikeResponseDTO> => {
     const response = await fetch(
-      `${API_URL}/profile/${textoUrl}/like`,
+      `${API_URL}/api/profile/${textoUrl}/like`,
       {
         method: 'DELETE',
         headers: authHeaders(),

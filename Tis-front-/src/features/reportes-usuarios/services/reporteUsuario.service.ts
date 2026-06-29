@@ -4,7 +4,7 @@
     ReporteUsuariosResponse,
   } from '../models/reporte-usuario.model';
 
-  const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   /**
    * Cambia esto a false cuando el backend ya esté listo.

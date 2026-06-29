@@ -1,6 +1,6 @@
 import type { AcademicTraining } from '../models/academicTraining.model';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const academicTrainingService = {
   uploadToCloudinary: async (file: File): Promise<string> => {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const BASE_URL = import.meta.env.VITE_API_URL;
 //BORRAR ES HARCODEADO const AUTH_TOKEN = 'tokenejemplo455ssXla';
 // Función para obtener el token en cada request
 const getToken = () => sessionStorage.getItem('jwt') || '';
