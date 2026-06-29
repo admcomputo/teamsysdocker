@@ -10,14 +10,13 @@ import type {
 
 import type { BuscarPortafoliosResponseDTO } from "./filtros-busqueda.dto";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api`;
-
+const API_URL = import.meta.env.VITE_API_URL;
 const buscarPortafoliosBackend = async (
   filtros: FiltrosBusqueda,
 ): Promise<RespuestaBusquedaPortafolios> => {
   const requestDTO = filtrosBusquedaToRequestDTO(filtros);
 
-  const response = await fetch(`${API_URL}/api/portafolios/buscar`, {
+  const response = await fetch(`${API_URL}/portafolios/buscar`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
