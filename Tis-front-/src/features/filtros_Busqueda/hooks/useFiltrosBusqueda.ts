@@ -37,23 +37,47 @@ export const useFiltrosBusqueda = () => {
       setCargando(true);
       setError(null);
 
+      console.log("FILTROS ACTUALES",filtrosActuales)
       const response = await buscarPortafoliosService(filtrosActuales);
-
-      const filteredData = response.data.filter(
+      // Remover usuario actual de los resultados
+      const sinUsuarioActual = response.data.filter(
         (item) => String(item.id) !== String(currentUser?.id),
       );
 
-      setResultados(filteredData);
+      // Si hay texto de búsqueda general, aplicar un filtrado adicional
+      // en cliente para que la búsqueda general solo coincida contra
+      // nombreCompleto, profesion y ubicacion.
+      let finalData = sinUsuarioActual;
+      const termino = typeof filtrosActuales.buscar === "string" ? filtrosActuales.buscar.trim().toLowerCase() : "";
 
-      const containsCurrentUser = response.data.some(
-        (item) => String(item.id) === String(currentUser?.id),
-      );
+      if (termino) {
+        finalData = sinUsuarioActual.filter((item) => {
+          const nombre = String(item.nombreCompleto || "").toLowerCase();
+          const profesion = String(item.profesion || "").toLowerCase();
+          const ubicacion = String(item.ubicacion || "").toLowerCase();
 
-      setTotal(
-        containsCurrentUser ? Math.max(0, response.total - 1) : response.total,
-      );
+          return (
+            nombre.includes(termino) || profesion.includes(termino) || ubicacion.includes(termino)
+          );
+        });
 
-      setTotalPaginas(response.totalPaginas || 1);
+        // Ajustar total y páginas localmente cuando se aplica el filtro cliente
+        setResultados(finalData);
+        setTotal(finalData.length);
+        setTotalPaginas(1);
+      } else {
+        setResultados(finalData);
+
+        const containsCurrentUser = response.data.some(
+          (item) => String(item.id) === String(currentUser?.id),
+        );
+
+        setTotal(
+          containsCurrentUser ? Math.max(0, response.total - 1) : response.total,
+        );
+
+        setTotalPaginas(response.totalPaginas || 1);
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -136,7 +160,7 @@ export const useFiltrosBusqueda = () => {
     buscarPortafolios(nuevosFiltros);
   };
 
-  const alternarIdioma = (idioma: string) => {
+  /*const alternarIdioma = (idioma: string) => {
     setFiltros((prev) => {
       const existe = prev.idiomas.includes(idioma);
 
@@ -148,17 +172,18 @@ export const useFiltrosBusqueda = () => {
         pagina: 1,
       };
     });
+  };*/
+
+  // En useFiltrosBusqueda.ts
+const aplicarFiltros = (filtrosDesdePanel?: FiltrosBusqueda) => {
+  const nuevosFiltros = {
+    ...(filtrosDesdePanel || filtros), // Si vienen del panel, usa esos; si no, el estado actual
+    pagina: 1,
   };
 
-  const aplicarFiltros = () => {
-    const nuevosFiltros = {
-      ...filtros,
-      pagina: 1,
-    };
-
-    setFiltros(nuevosFiltros);
-    buscarPortafolios(nuevosFiltros);
-  };
+  setFiltros(nuevosFiltros);
+  buscarPortafolios(nuevosFiltros);
+};
 
   const limpiarFiltros = () => {
     setFiltros(filtrosBusquedaIniciales);
@@ -183,9 +208,10 @@ export const useFiltrosBusqueda = () => {
     actualizarFiltro,
     cambiarOrden,
     cambiarPagina,
-    alternarIdioma,
+    //alternarIdioma,
     aplicarFiltros,
     limpiarFiltros,
     buscarPortafolios,
+    setFiltros,
   };
 };

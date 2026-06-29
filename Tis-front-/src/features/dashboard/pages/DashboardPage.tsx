@@ -113,7 +113,7 @@ export const DashboardPage = () => {
               <FiltrosBusquedaPanel
                 filtros={filtros}
                 cargando={cargando}
-                onActualizarFiltro={actualizarFiltro}
+                //onActualizarFiltro={actualizarFiltro}
                 onAplicarFiltros={aplicarFiltros}
                 onLimpiarFiltros={limpiarFiltros}
               />

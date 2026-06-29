@@ -4,6 +4,8 @@ import { FiltrosBusquedaPagination } from "../components/FiltrosBusquedaPaginati
 import { FiltrosBusquedaPanel } from "../components/FiltrosBusquedaPanel";
 import { FiltrosBusquedaSort } from "../components/FiltrosBusquedaSort";
 import { useFiltrosBusqueda } from "../hooks/useFiltrosBusqueda";
+import type { FiltrosBusqueda } from "../models/filtros-busqueda.model";
+//import { useEffect } from "react";
 
 export const FiltrosBusquedaPage = () => {
   const {
@@ -18,7 +20,26 @@ export const FiltrosBusquedaPage = () => {
     cambiarPagina,
     aplicarFiltros,
     limpiarFiltros,
+    setFiltros,
+    buscarPortafolios
   } = useFiltrosBusqueda();
+console.log("🔍 [Page Render] Estado actual de filtros:", filtros);
+  // Manejador para aplicar filtros desde el panel (recibe el objeto completo)
+  // Cambia esto en FiltrosBusquedaPage.tsx:
+const handleAplicarFiltros = (filtrosCompletos: FiltrosBusqueda) => {
+  console.log("📥 [Page - handleAplicarFiltros] Recibido desde el Panel:", filtrosCompletos);
+  // 1. Forzamos a que la página se reinicie a 1 en los nuevos filtros
+  const filtrosConPaginaFijada = {
+    ...filtrosCompletos,
+    pagina: 1
+  };
+  
+  console.log("🚀 [Page - handleAplicarFiltros] Enviando de inmediato a buscarPortafolios:", filtrosConPaginaFijada);
+  // 2. Actualizamos el estado para que visualmente todo coincida
+  setFiltros(filtrosConPaginaFijada); 
+  // 3. Ejecutamos la búsqueda pasándole el objeto nuevo de forma DIRECTA e inmediata
+  buscarPortafolios(filtrosConPaginaFijada); 
+};
 
   return (
     <main className="min-h-screen bg-bg-dark px-4 py-8 text-text-primary">
@@ -46,8 +67,7 @@ export const FiltrosBusquedaPage = () => {
           <FiltrosBusquedaPanel
             filtros={filtros}
             cargando={cargando}
-            onActualizarFiltro={actualizarFiltro}
-            onAplicarFiltros={aplicarFiltros}
+            onAplicarFiltros={handleAplicarFiltros}
             onLimpiarFiltros={limpiarFiltros}
           />
 

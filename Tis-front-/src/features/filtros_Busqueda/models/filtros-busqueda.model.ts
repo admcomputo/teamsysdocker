@@ -13,13 +13,50 @@ export type ModalidadTrabajo =
   | "Freelance"
   | "";
 
+export type NivelAcademico = "TODOS"|"PRIMARIA" | "SECUNDARIA" | "TECNICO" | "LICENCIATURA" | "MAESTRIA" | "DOCTORADO" | "DIPLOMADO" | "CURSOS";
+export type EstadoFormacion = "TODOS"|"EN CURSO" | "FINALIZADO" | "INCOMPLETO";
+export type NivelDominio = "TODOS"|"BASICO" | "INTERMEDIO" | "AVANZADO" | "EXPERTO";
+
+// --- Nuevas interfaces para filtros avanzados ---
+export interface ExperienciaLaboral {
+  nombreEmpresa: string;
+  cargo: string;
+  anosExperiencia: number;
+  ciudad: string;
+  tecnologias: string[];
+}
+
+export interface HabilidadTecnica {
+  nombre: string;
+  nivel: NivelDominio;
+  anosExperiencia: number;
+}
+
+export interface HabilidadBlanda {
+  nombre: string;
+}
+
+export interface Proyecto {
+  nombre: string;
+  tecnologias: string[];
+  duracion: string;
+  rol: string;
+}
+
+export interface FormacionAcademica {
+  institucion: string;
+  titulo: string;
+  nivel: NivelAcademico;
+  duracion: number;
+  estado: EstadoFormacion;
+}
 export interface FiltrosBusqueda {
   buscar: string;
   profesion: string;
   especializacion: string;
   tecnologia: string;
   empresa: string;
-  formacionAcademica: string;
+  //formacionAcademica: string;
   disponibilidad: Disponibilidad;
   modalidadTrabajo: ModalidadTrabajo;
   experienciaMinima: number | "";
@@ -28,6 +65,20 @@ export interface FiltrosBusqueda {
   ordenarPor: OrdenarPor;
   pagina: number;
   limite: number;
+
+  // Filtros avanzados (opcionales, pueden ser null)
+  //experienciasLaborales: ExperienciaLaboral[] | null;
+  //habilidadesTecnicas: HabilidadTecnica[] | null;
+  //habilidadesBlandas: HabilidadBlanda[] | null;
+  //proyectos: Proyecto[] | null;
+  //formacionAcademica: FormacionAcademica[] | null;
+
+  experienciaLaboral: ExperienciaLaboral | null;
+  habilidadTecnica: HabilidadTecnica | null;
+  habilidadBlanda: HabilidadBlanda | null;
+  proyecto: Proyecto | null;
+  formacionAcademica: FormacionAcademica | null;
+
 }
 
 export interface PortafolioResultado {
@@ -57,20 +108,31 @@ export interface RespuestaBusquedaPortafolios {
 }
 
 export const filtrosBusquedaIniciales: FiltrosBusqueda = {
-  buscar: "",
-  profesion: "",
-  especializacion: "",
-  tecnologia: "",
-  empresa: "",
-  formacionAcademica: "",
-  disponibilidad: "",
-  modalidadTrabajo: "",
-  experienciaMinima: "",
+  buscar: '',
+  profesion: '',
+  especializacion: '',
+  tecnologia: '',
+  empresa: '',
+  //formacionAcademica: "",
+  disponibilidad: '',
+  modalidadTrabajo: '',
+  experienciaMinima: '',
   idiomas: [],
-  ubicacion: "",
-  ordenarPor: "relevancia",
+  ubicacion: '',
+  ordenarPor: "experiencia",
   pagina: 1,
   limite: 10,
+  // Avanzados vacíos
+  //experienciasLaborales: null,
+  //habilidadesTecnicas: null,
+  //habilidadesBlandas: null,
+  //proyectos: null,
+  //formacionAcademica: null,
+  experienciaLaboral: null,
+  habilidadTecnica: null,
+  habilidadBlanda: null,
+  proyecto: null,
+  formacionAcademica: null,
 };
 
 export const opcionesDisponibilidad: Disponibilidad[] = [

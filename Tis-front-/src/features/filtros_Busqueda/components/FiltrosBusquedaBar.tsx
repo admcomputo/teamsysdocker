@@ -34,13 +34,13 @@ export const FiltrosBusquedaBar = ({
             type="text"
             value={valor}
             maxLength={80}
-            placeholder="Ej: Gabriel, React, Desarrollador Frontend"
+            placeholder="Ej: Gabriel, Desarrollador, Cochabamba"
             onChange={(event) => onChange(event.target.value)}
             className="w-full rounded-xl border border-card-border bg-[#061327] px-4 py-2.5 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-brand-azul-brillante focus:ring-2 focus:ring-brand-azul-brillante/20"
           />
 
           <p className="mt-1 text-xs text-text-secondary">
-            Puedes buscar por nombre, profesión, tecnología o palabra clave.
+            Busca por nombre, profesión o ciudad. Para búsquedas más específicas usa los filtros avanzados.
           </p>
         </div>
 
