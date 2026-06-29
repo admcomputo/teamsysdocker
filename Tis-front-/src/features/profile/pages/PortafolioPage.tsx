@@ -391,9 +391,9 @@ export const PortafolioPage = () => {
 
         setTotalLikes((prev) => prev + 1);
 
-        if (!isPublicMode) {
-          alert("¡Like registrado!");
-        }
+        //  if (!isPublicMode) {
+         // alert("¡Like registrado!");
+        //}
 
       } else {
 
@@ -401,9 +401,9 @@ export const PortafolioPage = () => {
 
         setTotalLikes((prev) => Math.max(0, prev - 1));
 
-        if (!isPublicMode) {
-          alert("Like eliminado");
-        }
+        //if (!isPublicMode) {
+        //  alert("Like eliminado");
+       // }
       }
 
 
