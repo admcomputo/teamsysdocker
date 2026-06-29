@@ -7,7 +7,7 @@ services:
       - "8081:8081"
     environment:
       DB_HOST: mysql-fda57ea-myql.l.aivencloud.com
-      _PORT: 25722
+      DB_PORT: 25722
       DB_NAME: db_portafolios_tis
       DB_USER: avnadmin
       DB_PASSWORD: AVNS_QAlwblRdQS3AySrdXb5
@@ -23,7 +23,7 @@ services:
       context: ./Tis-front-
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api/api
+        VITE_API_URL: https://teamsysback.apps.cs.umss.edu.bo/api/
         VITE_CLOUDINARY_CLOUD_NAME: drcjlwd3h
         VITE_CLOUDINARY_UPLOAD_PRESET: mhflu6et
         VITE_CLOUDINARY_UPLOAD_FOLDER: cvs
