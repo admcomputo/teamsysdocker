@@ -32,7 +32,7 @@ export const DashboardLayout = () => {
       try {
         const token = sessionStorage.getItem('jwt');
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/perfil`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/perfil`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const DashboardLayout = () => {
           localStorage.getItem('jwt') ||
           localStorage.getItem('token');
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/enlace/mi-enlace-publico`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/enlace/mi-enlace-publico`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

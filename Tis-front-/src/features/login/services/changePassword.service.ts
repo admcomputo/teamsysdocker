@@ -26,7 +26,7 @@ export const changePasswordService = {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/password/reset-password`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/password/reset-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

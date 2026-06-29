@@ -26,7 +26,7 @@ export const loginService = {
       password: pass
     };
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/login`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/api/usuarios/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

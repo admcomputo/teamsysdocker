@@ -5,7 +5,7 @@ export const photoService = {
   getProfilePhoto: async (): Promise<PerfilPhotoData> => {
     const token = sessionStorage.getItem('jwt');
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/perfil`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/perfil`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const photoService = {
   ): Promise<PhotoProfileResponse> => {
     const token = sessionStorage.getItem('jwt');
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/usuarios/foto-perfil`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/foto-perfil`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
